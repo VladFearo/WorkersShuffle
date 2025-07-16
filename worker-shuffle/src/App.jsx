@@ -65,7 +65,7 @@ function App() {
   // Worker management functions
   const addWorker = (name, group) => {
     const newWorker = {
-      id: generateNextId(),
+      id: generateNextId(workers),
       name: name.trim(),
       group,
       isWorkingToday: true,
@@ -144,7 +144,7 @@ function App() {
           className="settings-toggle-btn"
           onClick={() => setShowSettings(!showSettings)}
         >
-          {showSettings ? "סגור הגדרות ▲" : "נהل עובדים ▼"}
+          {showSettings ? "סגור הגדרות ▲" : "נהל עובדים ▼"}
         </button>
 
         <div className={`settings-container ${showSettings ? "open" : ""}`}>
