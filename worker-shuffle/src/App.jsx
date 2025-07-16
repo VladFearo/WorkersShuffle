@@ -100,9 +100,11 @@ function App() {
     <div className="app-container">
       <h1 className="app-title">הגרלת הפסקות עובדים</h1>
 
+      {/*
+      for debugging purposes, you can uncomment the button below to reset workers
       <button className="clear-cache-btn" onClick={resetWorkers}>
         נקה מטמון
-      </button>
+      </button>*/}
 
       <WorkersTable
         title="הפסקות טכני"
