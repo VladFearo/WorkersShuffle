@@ -69,3 +69,19 @@
   font-weight: bold;
   color: #059669;
 }
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .workers-table {
+    font-size: 14px;
+  }
+  
+  .workers-table th,
+  .workers-table td {
+    padding: 8px;
+  }
+  
+  .table-title {
+    font-size: 1.1em;
+  }
+}

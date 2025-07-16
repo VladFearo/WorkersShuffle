@@ -151,3 +151,34 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(220, 38, 38, 0.4);
 }
+
+
+@media (max-width: 768px) {
+  .workers-management {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .workers-group {
+    max-width: 100%;
+  }
+  
+  .add-worker-form {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .worker-name-input,
+  .group-select {
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  .worker-item {
+    padding: 12px;
+  }
+  
+  .worker-checkbox {
+    transform: scale(1.8); /* Larger checkboxes on mobile */
+  }
+}

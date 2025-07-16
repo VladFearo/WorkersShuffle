@@ -10,14 +10,29 @@ body {
   color: #334155;
   direction: rtl;
   text-align: center;
+  /* Mobile improvements */
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button {
   cursor: pointer;
   border: none;
   outline: none;
+  /* Better touch targets */
+  min-height: 44px;
+  min-width: 44px;
 }
 
 input {
   outline: none;
+  /* Better touch targets */
+  min-height: 44px;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  body {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
 }
