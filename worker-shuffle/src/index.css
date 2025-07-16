@@ -1,68 +1,119 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background-color: #f8fafc;
+  color: #334155;
+  direction: rtl;
+  text-align: center; /* Center everything */
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  border: none;
+  outline: none;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+input {
+  outline: none;
+}
+
+/* App styles */
+.app-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.app-title {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 1.5em;
+}
+
+.clear-cache-btn {
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.clear-cache-btn:hover {
+  background-color: #c82333;
+}
+
+/* WorkersTable styles */
+.workers-table-container {
+  margin-bottom: 30px;
+}
+
+.table-title {
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.workers-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid #ddd;
+  margin-top: 10px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.workers-table th {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+  font-weight: bold;
+  color: white;
+}
+
+.workers-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.empty-state {
+  text-align: center;
+  margin-top: 10px;
+  color: #666;
+  font-style: italic;
+}
+
+/* Colors for טכני (Technical) - Dark Blue */
+.workers-table.technical th {
+  background-color: #1e40af; /* Dark blue */
+}
+
+.workers-table.technical tr:nth-child(even) {
+  background-color: #dbeafe; /* Very light blue */
+}
+
+.workers-table.technical tr:nth-child(odd) {
+  background-color: #f0f9ff; /* Even lighter blue */
+}
+
+/* Colors for שרות (Service) - Light Blue */
+.workers-table.service th {
+  background-color: #0ea5e9; /* Light blue */
+}
+
+.workers-table.service tr:nth-child(even) {
+  background-color: #e0f2fe; /* Very light cyan */
+}
+
+.workers-table.service tr:nth-child(odd) {
+  background-color: #f0f9ff; /* Even lighter cyan */
 }
