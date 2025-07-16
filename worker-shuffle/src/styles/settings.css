@@ -30,7 +30,7 @@
 }
 
 .settings-container.open {
-  max-height: 800px;
+  max-height: none;
 }
 
 .settings-panel {
