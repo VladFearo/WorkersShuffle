@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import WorkersTable from "./components/WorkersTable";
 import { defaultWorkers } from "./data/defaultWorkers";
+import { shuffleArray } from "./utils/shuffle";
 
 function App() {
   // Load workers from localStorage or use defaults
@@ -12,6 +13,10 @@ function App() {
       return defaultWorkers;
     }
   });
+
+  // Shuffle states
+  const [shuffledTechnical, setShuffledTechnical] = useState([]);
+  const [shuffledService, setShuffledService] = useState([]);
 
   // Save to localStorage whenever workers change
   useEffect(() => {
@@ -31,6 +36,19 @@ function App() {
   const resetWorkers = () => {
     localStorage.removeItem("workers");
     setWorkers(defaultWorkers);
+    setShuffledTechnical([]);
+    setShuffledService([]);
+  };
+
+  // Shuffle functions
+  const shuffleTechnical = () => {
+    const technical = getTechnicalWorkingToday();
+    setShuffledTechnical(shuffleArray(technical));
+  };
+
+  const shuffleService = () => {
+    const service = getServiceWorkingToday();
+    setShuffledService(shuffleArray(service));
   };
 
   return (
@@ -45,12 +63,16 @@ function App() {
         title="הפסקות טכני"
         workers={getTechnicalWorkingToday()}
         type="technical"
+        onShuffle={shuffleTechnical}
+        shuffledWorkers={shuffledTechnical}
       />
 
       <WorkersTable
         title="הפסקות שרות"
         workers={getServiceWorkingToday()}
         type="service"
+        onShuffle={shuffleService}
+        shuffledWorkers={shuffledService}
       />
     </div>
   );

@@ -117,3 +117,43 @@ input {
 .workers-table.service tr:nth-child(odd) {
   background-color: #f0f9ff; /* Even lighter cyan */
 }
+
+/* Add these styles to your existing CSS */
+
+.shuffle-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.shuffle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.shuffle-btn.technical {
+  background-color: #1e40af;
+}
+
+.shuffle-btn.technical:hover:not(:disabled) {
+  background-color: #1e3a8a;
+}
+
+.shuffle-btn.service {
+  background-color: #0ea5e9;
+}
+
+.shuffle-btn.service:hover:not(:disabled) {
+  background-color: #0284c7;
+}
+
+.shuffle-order {
+  font-weight: bold;
+  color: #059669;
+}
