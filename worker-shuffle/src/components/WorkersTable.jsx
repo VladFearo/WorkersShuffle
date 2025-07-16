@@ -1,18 +1,10 @@
-const WorkersTable = ({ title, workers, type, onShuffle, shuffledWorkers }) => {
+const WorkersTable = ({ title, workers, type, shuffledWorkers }) => {
   // Use shuffled workers if available, otherwise use original order
   const displayWorkers = shuffledWorkers.length > 0 ? shuffledWorkers : workers;
 
   return (
     <div className="workers-table-container">
       <h2 className="table-title">{title}</h2>
-
-      <button
-        className={`shuffle-btn ${type}`}
-        onClick={onShuffle}
-        disabled={workers.length === 0}
-      >
-        הגרל סדר הפסקות
-      </button>
 
       <table className={`workers-table ${type}`}>
         <thead>

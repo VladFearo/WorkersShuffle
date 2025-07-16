@@ -19,6 +19,7 @@ function App() {
   const [shuffledTechnical, setShuffledTechnical] = useState([]);
   const [shuffledService, setShuffledService] = useState([]);
   const [showSettings, setShowSettings] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   // Save to localStorage whenever workers change
   useEffect(() => {
@@ -42,16 +43,60 @@ function App() {
     setShuffledService([]);
   };
 
-  // Shuffle functions
-  const shuffleTechnical = () => {
+  // Single shuffle function for both groups
+  const shuffleBothGroups = () => {
     const technical = getTechnicalWorkingToday();
-    setShuffledTechnical(shuffleArray(technical));
+    const service = getServiceWorkingToday();
+
+    if (technical.length > 0) {
+      setShuffledTechnical(shuffleArray(technical));
+    }
+    if (service.length > 0) {
+      setShuffledService(shuffleArray(service));
+    }
   };
 
-  const shuffleService = () => {
-    const service = getServiceWorkingToday();
-    setShuffledService(shuffleArray(service));
+  // Copy to clipboard function
+  const copyToWhatsApp = async () => {
+    let text = "";
+
+    // Technical workers
+    if (shuffledTechnical.length > 0) {
+      text += "הפסקות טכני:\n";
+      shuffledTechnical.forEach((worker) => {
+        text += `${worker.name}\n`;
+      });
+      text += "\n";
+    }
+
+    // Service workers
+    if (shuffledService.length > 0) {
+      text += "הפסקות שירות:\n";
+      shuffledService.forEach((worker) => {
+        text += `${worker.name}\n`;
+      });
+    }
+
+    // Remove trailing newline
+    text = text.trim();
+
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    }
   };
+
+  // Check if we have workers to shuffle
+  const hasWorkersToShuffle =
+    getTechnicalWorkingToday().length > 0 ||
+    getServiceWorkingToday().length > 0;
+
+  // Check if we have any shuffled results
+  const hasShuffledResults =
+    shuffledTechnical.length > 0 || shuffledService.length > 0;
 
   // Worker management functions
   const addWorker = (name, group) => {
@@ -99,17 +144,35 @@ function App() {
         title="הפסקות טכני"
         workers={getTechnicalWorkingToday()}
         type="technical"
-        onShuffle={shuffleTechnical}
         shuffledWorkers={shuffledTechnical}
       />
 
       <WorkersTable
-        title="הפסקות שרות"
+        title="הפסקות שירות"
         workers={getServiceWorkingToday()}
         type="service"
-        onShuffle={shuffleService}
         shuffledWorkers={shuffledService}
       />
+
+      {/* Main action buttons */}
+      <div className="main-actions">
+        <button
+          className="main-shuffle-btn"
+          onClick={shuffleBothGroups}
+          disabled={!hasWorkersToShuffle}
+        >
+          🎲 הגרל הפסקות לכולם
+        </button>
+
+        {hasShuffledResults && (
+          <button
+            className={`main-copy-btn ${copySuccess ? "success" : ""}`}
+            onClick={copyToWhatsApp}
+          >
+            {copySuccess ? "הועתק! ✓" : "📱 העתק לוואטסאפ"}
+          </button>
+        )}
+      </div>
 
       {/* Settings at the bottom */}
       <div className="settings-section">

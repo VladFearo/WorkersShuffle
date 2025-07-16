@@ -118,48 +118,83 @@ input {
   background-color: #f0f9ff; /* Even lighter cyan */
 }
 
-/* Add these styles to your existing CSS */
-
-.shuffle-btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.shuffle-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.shuffle-btn.technical {
-  background-color: #1e40af;
-}
-
-.shuffle-btn.technical:hover:not(:disabled) {
-  background-color: #1e3a8a;
-}
-
-.shuffle-btn.service {
-  background-color: #0ea5e9;
-}
-
-.shuffle-btn.service:hover:not(:disabled) {
-  background-color: #0284c7;
-}
-
 .shuffle-order {
   font-weight: bold;
   color: #059669;
 }
 
-/* Replace the existing settings styles with these animated ones */
+/* Main action buttons - NEW */
+.main-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  margin: 40px 0 30px 0;
+  padding: 25px;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+}
 
+.main-shuffle-btn {
+  padding: 18px 40px;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+  min-width: 280px;
+}
+
+.main-shuffle-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+}
+
+.main-shuffle-btn:disabled {
+  background: linear-gradient(135deg, #9ca3af, #6b7280);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.main-copy-btn {
+  padding: 15px 35px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 12px rgba(16, 185, 129, 0.4);
+  min-width: 250px;
+}
+
+.main-copy-btn:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 18px rgba(16, 185, 129, 0.5);
+}
+
+.main-copy-btn.success {
+  background: linear-gradient(135deg, #059669, #10b981);
+  animation: successPulse 0.5s ease-out;
+}
+
+@keyframes successPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* Settings section */
 .settings-section {
   margin-top: 40px;
   width: 100%;
