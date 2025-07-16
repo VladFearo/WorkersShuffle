@@ -1,0 +1,71 @@
+.workers-table-container {
+  margin-bottom: 30px;
+}
+
+.table-title {
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.workers-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid #ddd;
+  margin-top: 10px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.workers-table th {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+  font-weight: bold;
+  color: white;
+}
+
+.workers-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.empty-state {
+  text-align: center;
+  margin-top: 10px;
+  color: #666;
+  font-style: italic;
+}
+
+/* Colors for טכני (Technical) - Dark Blue */
+.workers-table.technical th {
+  background-color: #1e40af;
+}
+
+.workers-table.technical tr:nth-child(even) {
+  background-color: #dbeafe;
+}
+
+.workers-table.technical tr:nth-child(odd) {
+  background-color: #f0f9ff;
+}
+
+/* Colors for שרות (Service) - Light Blue */
+.workers-table.service th {
+  background-color: #0ea5e9;
+}
+
+.workers-table.service tr:nth-child(even) {
+  background-color: #e0f2fe;
+}
+
+.workers-table.service tr:nth-child(odd) {
+  background-color: #f0f9ff;
+}
+
+.shuffle-order {
+  font-weight: bold;
+  color: #059669;
+}

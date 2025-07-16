@@ -1,0 +1,153 @@
+.workers-management {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+}
+
+.workers-group {
+  flex: 1;
+  max-width: 280px;
+  padding: 15px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Technical group styling */
+.workers-group.technical {
+  border: 3px solid #1e40af;
+  background: linear-gradient(135deg, #f0f4ff, #e0ebff);
+}
+
+.workers-group.technical h5 {
+  color: #1e40af;
+  background: #1e40af;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  text-align: center;
+  margin: -5px -5px 15px -5px;
+}
+
+/* Service group styling */
+.workers-group.service {
+  border: 3px solid #0ea5e9;
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+}
+
+.workers-group.service h5 {
+  color: #0ea5e9;
+  background: #0ea5e9;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  text-align: center;
+  margin: -5px -5px 15px -5px;
+}
+
+.worker-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+  background: white;
+  position: relative;
+}
+
+/* Worker item colors for technical */
+.workers-group.technical .worker-item {
+  border-color: #bfdbfe;
+}
+
+.workers-group.technical .worker-item:hover {
+  border-color: #1e40af;
+  box-shadow: 0 4px 16px rgba(30, 64, 175, 0.2);
+}
+
+.workers-group.technical .worker-item.working {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  border-color: #1e40af;
+}
+
+/* Worker item colors for service */
+.workers-group.service .worker-item {
+  border-color: #bae6fd;
+}
+
+.workers-group.service .worker-item:hover {
+  border-color: #0ea5e9;
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.2);
+}
+
+.workers-group.service .worker-item.working {
+  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+  border-color: #0ea5e9;
+}
+
+.worker-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.worker-checkbox {
+  margin: 0;
+  transform: scale(1.5);
+  cursor: pointer;
+}
+
+.status-text {
+  font-weight: bold;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-text.working {
+  background: #10b981;
+  color: white;
+}
+
+.status-text.not-working {
+  background: #6b7280;
+  color: white;
+}
+
+.worker-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.worker-name.working {
+  color: #065f46;
+}
+
+.worker-name.not-working {
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+
+.remove-btn {
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);
+}
+
+.remove-btn:hover {
+  background: linear-gradient(135deg, #b91c1c, #991b1b);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.4);
+}
