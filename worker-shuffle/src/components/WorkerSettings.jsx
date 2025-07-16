@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { WORKER_TYPES, WORKER_STATUS } from "../constants/workerTypes";
 
 const WorkerSettings = ({
   workers,
@@ -7,7 +8,7 @@ const WorkerSettings = ({
   onToggleWorkerStatus,
 }) => {
   const [newWorkerName, setNewWorkerName] = useState("");
-  const [selectedGroup, setSelectedGroup] = useState("טכני");
+  const [selectedGroup, setSelectedGroup] = useState(WORKER_TYPES.TECHNICAL);
 
   const handleAddWorker = () => {
     if (newWorkerName.trim()) {
@@ -43,8 +44,8 @@ const WorkerSettings = ({
             onChange={(e) => setSelectedGroup(e.target.value)}
             className="group-select"
           >
-            <option value="טכני">טכני</option>
-            <option value="שרות">שרות</option>
+            <option value={WORKER_TYPES.TECHNICAL}>טכני</option>
+            <option value={WORKER_TYPES.SERVICE}>שרות</option>
           </select>
           <button onClick={handleAddWorker} className="add-btn">
             הוסף
@@ -57,7 +58,7 @@ const WorkerSettings = ({
         <div className="workers-group technical">
           <h5>טכני</h5>
           {workers
-            .filter((w) => w.group === "טכני")
+            .filter((w) => w.group === WORKER_TYPES.TECHNICAL)
             .map((worker) => (
               <div
                 key={worker.id}
@@ -77,7 +78,9 @@ const WorkerSettings = ({
                       worker.isWorkingToday ? "working" : "not-working"
                     }`}
                   >
-                    {worker.isWorkingToday ? "עובד היום" : "לא עובד"}
+                    {worker.isWorkingToday
+                      ? WORKER_STATUS.WORKING
+                      : WORKER_STATUS.NOT_WORKING}
                   </span>
                 </div>
                 <span
@@ -100,7 +103,7 @@ const WorkerSettings = ({
         <div className="workers-group service">
           <h5>שרות</h5>
           {workers
-            .filter((w) => w.group === "שרות")
+            .filter((w) => w.group === WORKER_TYPES.SERVICE)
             .map((worker) => (
               <div
                 key={worker.id}
@@ -120,7 +123,9 @@ const WorkerSettings = ({
                       worker.isWorkingToday ? "working" : "not-working"
                     }`}
                   >
-                    {worker.isWorkingToday ? "עובד היום" : "לא עובד"}
+                    {worker.isWorkingToday
+                      ? WORKER_STATUS.WORKING
+                      : WORKER_STATUS.NOT_WORKING}
                   </span>
                 </div>
                 <span

@@ -3,17 +3,20 @@ import WorkersTable from "./components/WorkersTable";
 import WorkerSettings from "./components/WorkerSettings";
 import { defaultWorkers } from "./data/defaultWorkers";
 import { shuffleArray } from "./utils/shuffle";
+import { loadWorkers, saveWorkers, clearWorkers } from "./utils/localStorage";
+import {
+  getTechnicalWorkingToday,
+  getServiceWorkingToday,
+  hasWorkersToShuffle,
+  hasShuffledResults,
+  generateNextId,
+} from "./utils/workerHelpers";
+import { formatForWhatsApp } from "./utils/whatsappFormatter";
+import { WORKER_TYPES } from "./constants/workerTypes";
 
 function App() {
   // Load workers from localStorage or use defaults
-  const [workers, setWorkers] = useState(() => {
-    try {
-      const saved = localStorage.getItem("workers");
-      return saved ? JSON.parse(saved) : defaultWorkers;
-    } catch {
-      return defaultWorkers;
-    }
-  });
+  const [workers, setWorkers] = useState(() => loadWorkers(defaultWorkers));
 
   // Shuffle states
   const [shuffledTechnical, setShuffledTechnical] = useState([]);
@@ -23,21 +26,11 @@ function App() {
 
   // Save to localStorage whenever workers change
   useEffect(() => {
-    localStorage.setItem("workers", JSON.stringify(workers));
+    saveWorkers(workers);
   }, [workers]);
 
-  // Helper functions
-  const getTechnicalWorkingToday = () =>
-    workers.filter(
-      (worker) => worker.group === "טכני" && worker.isWorkingToday
-    );
-  const getServiceWorkingToday = () =>
-    workers.filter(
-      (worker) => worker.group === "שרות" && worker.isWorkingToday
-    );
-
   const resetWorkers = () => {
-    localStorage.removeItem("workers");
+    clearWorkers();
     setWorkers(defaultWorkers);
     setShuffledTechnical([]);
     setShuffledService([]);
@@ -45,8 +38,8 @@ function App() {
 
   // Single shuffle function for both groups
   const shuffleBothGroups = () => {
-    const technical = getTechnicalWorkingToday();
-    const service = getServiceWorkingToday();
+    const technical = getTechnicalWorkingToday(workers);
+    const service = getServiceWorkingToday(workers);
 
     if (technical.length > 0) {
       setShuffledTechnical(shuffleArray(technical));
@@ -58,27 +51,7 @@ function App() {
 
   // Copy to clipboard function
   const copyToWhatsApp = async () => {
-    let text = "";
-
-    // Technical workers
-    if (shuffledTechnical.length > 0) {
-      text += "הפסקות טכני:\n";
-      shuffledTechnical.forEach((worker) => {
-        text += `${worker.name}\n`;
-      });
-      text += "\n";
-    }
-
-    // Service workers
-    if (shuffledService.length > 0) {
-      text += "הפסקות שירות:\n";
-      shuffledService.forEach((worker) => {
-        text += `${worker.name}\n`;
-      });
-    }
-
-    // Remove trailing newline
-    text = text.trim();
+    const text = formatForWhatsApp(shuffledTechnical, shuffledService);
 
     try {
       await navigator.clipboard.writeText(text);
@@ -89,19 +62,10 @@ function App() {
     }
   };
 
-  // Check if we have workers to shuffle
-  const hasWorkersToShuffle =
-    getTechnicalWorkingToday().length > 0 ||
-    getServiceWorkingToday().length > 0;
-
-  // Check if we have any shuffled results
-  const hasShuffledResults =
-    shuffledTechnical.length > 0 || shuffledService.length > 0;
-
   // Worker management functions
   const addWorker = (name, group) => {
     const newWorker = {
-      id: Date.now(),
+      id: generateNextId(),
       name: name.trim(),
       group,
       isWorkingToday: true,
@@ -142,14 +106,14 @@ function App() {
 
       <WorkersTable
         title="הפסקות טכני"
-        workers={getTechnicalWorkingToday()}
+        workers={getTechnicalWorkingToday(workers)}
         type="technical"
         shuffledWorkers={shuffledTechnical}
       />
 
       <WorkersTable
         title="הפסקות שירות"
-        workers={getServiceWorkingToday()}
+        workers={getServiceWorkingToday(workers)}
         type="service"
         shuffledWorkers={shuffledService}
       />
@@ -159,12 +123,12 @@ function App() {
         <button
           className="main-shuffle-btn"
           onClick={shuffleBothGroups}
-          disabled={!hasWorkersToShuffle}
+          disabled={!hasWorkersToShuffle(workers)}
         >
           🎲 הגרל הפסקות לכולם
         </button>
 
-        {hasShuffledResults && (
+        {hasShuffledResults(shuffledTechnical, shuffledService) && (
           <button
             className={`main-copy-btn ${copySuccess ? "success" : ""}`}
             onClick={copyToWhatsApp}
@@ -180,7 +144,7 @@ function App() {
           className="settings-toggle-btn"
           onClick={() => setShowSettings(!showSettings)}
         >
-          {showSettings ? "סגור הגדרות ▲" : "נהל עובדים ▼"}
+          {showSettings ? "סגור הגדרות ▲" : "נהل עובדים ▼"}
         </button>
 
         <div className={`settings-container ${showSettings ? "open" : ""}`}>
