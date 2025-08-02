@@ -24,6 +24,10 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
+  // Manual editing state
+  const [isEditing, setIsEditing] = useState(false);
+  const [showChangelog, setShowChangelog] = useState(false);
+
   // Save to localStorage whenever workers change
   useEffect(() => {
     saveWorkers(workers);
@@ -47,6 +51,21 @@ function App() {
     if (service.length > 0) {
       setShuffledService(shuffleArray(service));
     }
+  };
+
+  // Toggle editing mode
+  const toggleEditMode = () => {
+    setIsEditing(!isEditing);
+  };
+
+  // Update shuffled order for technical workers
+  const updateTechnicalOrder = (newOrder) => {
+    setShuffledTechnical(newOrder);
+  };
+
+  // Update shuffled order for service workers
+  const updateServiceOrder = (newOrder) => {
+    setShuffledService(newOrder);
   };
 
   // Copy to clipboard function
@@ -100,6 +119,18 @@ function App() {
     <div className="app-container">
       <h1 className="app-title">הגרלת הפסקות עובדים</h1>
 
+      {/* Manual Edit Button */}
+      {hasShuffledResults(shuffledTechnical, shuffledService) && (
+        <div className="edit-button-container">
+          <button
+            className={`edit-toggle-btn ${isEditing ? "editing" : ""}`}
+            onClick={toggleEditMode}
+          >
+            {isEditing ? "שמור" : "עריכה ידנית"}
+          </button>
+        </div>
+      )}
+
       {/*
       for debugging purposes, you can uncomment the button below to reset workers
       <button className="clear-cache-btn" onClick={resetWorkers}>
@@ -111,6 +142,8 @@ function App() {
         workers={getTechnicalWorkingToday(workers)}
         type="technical"
         shuffledWorkers={shuffledTechnical}
+        isEditing={isEditing}
+        onUpdateOrder={updateTechnicalOrder}
       />
 
       <WorkersTable
@@ -118,6 +151,8 @@ function App() {
         workers={getServiceWorkingToday(workers)}
         type="service"
         shuffledWorkers={shuffledService}
+        isEditing={isEditing}
+        onUpdateOrder={updateServiceOrder}
       />
 
       {/* Main action buttons */}
@@ -157,6 +192,55 @@ function App() {
             onToggleWorkerStatus={toggleWorkerStatus}
           />
         </div>
+      </div>
+
+      {/* Version footer */}
+      <div className="version-footer">
+        <div className="version-info">
+          <span className="version-text">גרסה 1.1.0</span>
+          <button
+            className="changelog-btn"
+            onClick={() => setShowChangelog(!showChangelog)}
+          >
+            {showChangelog ? "סגור ▲" : "מה חדש? ▼"}
+          </button>
+        </div>
+
+        {showChangelog && (
+          <div className="changelog-container">
+            <div className="changelog-content">
+              <h4>🆕 מה חדש בגרסה 1.1.0:</h4>
+
+              <div className="changelog-section">
+                <h5>✨ עריכה ידנית:</h5>
+                <ul>
+                  <li>לחצו על "עריכה ידנית" לשינוי סדר ההפסקות</li>
+                  <li>גרירה ושחרור במחשב</li>
+                  <li>חצים במכשירים ניידים</li>
+                  <li>עריכת שמות עובדים בלחיצה</li>
+                </ul>
+              </div>
+
+              <div className="changelog-section">
+                <h5>🎨 שיפורים:</h5>
+                <ul>
+                  <li>ממשק משתמש משופר במצב עריכה</li>
+                  <li>הוראות ברורות לכל מכשיר</li>
+                  <li>אנימציות חלקות</li>
+                </ul>
+              </div>
+
+              <div className="changelog-section">
+                <h5>📱 תמיכה טובה יותר במובייל:</h5>
+                <ul>
+                  <li>כפתורי חצים גדולים וידידותיים למגע</li>
+                  <li>מניעת התנגשות עם גלילה</li>
+                  <li>ממשק מותאם לכל גודל מסך</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

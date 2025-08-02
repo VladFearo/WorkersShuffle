@@ -1,0 +1,228 @@
+/* Edit Button Styles */
+.edit-button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.edit-toggle-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.4);
+  min-width: 140px;
+}
+
+.edit-toggle-btn:hover {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(245, 158, 11, 0.5);
+}
+
+.edit-toggle-btn.editing {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.4);
+}
+
+.edit-toggle-btn.editing:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  box-shadow: 0 5px 15px rgba(16, 185, 129, 0.5);
+}
+
+/* Editing mode styles for tables */
+.workers-table.editing {
+  border: 3px dashed #f59e0b;
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+}
+
+.workers-table.editing thead th {
+  background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+}
+
+.workers-table.editing tr.editable {
+  transition: all 0.2s ease;
+}
+
+.workers-table.editing tr.editable:hover {
+  background-color: rgba(245, 158, 11, 0.1) !important;
+}
+
+/* === DESKTOP DRAG AND DROP STYLES === */
+.workers-table.desktop.editing tr.draggable {
+  cursor: move;
+}
+
+.workers-table.desktop.editing tr.draggable:hover {
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.drag-handle {
+  cursor: move;
+  padding: 8px !important;
+  text-align: center;
+  user-select: none;
+}
+
+.drag-icon {
+  color: #6b7280;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.drag-handle:hover .drag-icon {
+  color: #f59e0b;
+}
+
+/* === MOBILE ARROW BUTTON STYLES === */
+.move-controls {
+  padding: 8px !important;
+  text-align: center;
+  min-width: 80px;
+}
+
+.move-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.move-btn {
+  width: 36px;
+  height: 36px;
+  border: 2px solid #f59e0b;
+  background: white;
+  color: #f59e0b;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.move-btn:hover:not(:disabled) {
+  background: #f59e0b;
+  color: white;
+  transform: scale(1.1);
+}
+
+.move-btn:disabled {
+  border-color: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.move-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+/* === SHARED INPUT STYLES === */
+.name-edit-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  text-align: center;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.name-edit-input:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+  outline: none;
+}
+
+.worker-name-cell {
+  min-width: 120px;
+}
+
+.edit-instructions {
+  margin-top: 15px;
+  padding: 12px;
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  border: 2px solid #f59e0b;
+  border-radius: 8px;
+  color: #92400e;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* === RESPONSIVE MOBILE STYLES === */
+@media (max-width: 768px) {
+  .edit-toggle-btn {
+    width: 90%;
+    max-width: 250px;
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+  
+  /* Mobile-specific adjustments */
+  .workers-table.mobile.editing th,
+  .workers-table.mobile.editing td {
+    padding: 8px 4px;
+    font-size: 14px;
+  }
+  
+  .workers-table.mobile .name-edit-input {
+    font-size: 16px; /* Prevent zoom on iOS */
+    padding: 12px 8px;
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .workers-table.mobile .move-btn {
+    width: 44px; /* Larger touch targets on mobile */
+    height: 44px;
+    font-size: 20px;
+  }
+  
+  .workers-table.mobile .move-controls {
+    min-width: 60px;
+    padding: 4px !important;
+  }
+  
+  .workers-table.mobile .move-buttons {
+    gap: 6px;
+  }
+  
+  .workers-table.mobile .shuffle-order {
+    min-width: 40px;
+  }
+  
+  .edit-instructions {
+    font-size: 13px;
+    padding: 10px;
+  }
+}
+
+/* === DESKTOP-SPECIFIC STYLES === */
+@media (min-width: 769px) {
+  .workers-table.desktop .drag-handle {
+    min-width: 60px;
+  }
+  
+  .workers-table.desktop .drag-icon {
+    font-size: 20px;
+  }
+  
+  /* Better hover effects on desktop */
+  .workers-table.desktop.editing tr.draggable:hover .drag-icon {
+    color: #f59e0b;
+    transform: scale(1.2);
+  }
+}
