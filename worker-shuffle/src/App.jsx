@@ -118,22 +118,24 @@ function App() {
   return (
     <div className="app-container">
       <h1 className="app-title">הגרלת הפסקות עובדים</h1>
-      {/* Manual Edit Button */}
-      {hasShuffledResults(shuffledTechnical, shuffledService) && (
-        <div className="edit-button-container">
-          <button
-            className={`edit-toggle-btn ${isEditing ? "editing" : ""}`}
-            onClick={toggleEditMode}
-          >
-            {isEditing ? "שמור" : "עריכה ידנית"}
-          </button>
-        </div>
-      )}
-      {/*for debugging purposes, you can uncomment the button below to reset
-      workers
+
+      {/* Manual Edit Button - Always visible */}
+      <div className="edit-button-container">
+        <button
+          className={`edit-toggle-btn ${isEditing ? "editing" : ""}`}
+          onClick={toggleEditMode}
+          disabled={!hasWorkersToShuffle(workers)}
+        >
+          {isEditing ? "שמור" : "עריכה ידנית"}
+        </button>
+      </div>
+
+      {/*
+      for debugging purposes, you can uncomment the button below to reset workers
       <button className="clear-cache-btn" onClick={resetWorkers}>
         נקה מטמון
       </button>*/}
+
       <WorkersTable
         title="הפסקות טכני"
         workers={getTechnicalWorkingToday(workers)}
@@ -142,6 +144,7 @@ function App() {
         isEditing={isEditing}
         onUpdateOrder={updateTechnicalOrder}
       />
+
       <WorkersTable
         title="הפסקות שירות"
         workers={getServiceWorkingToday(workers)}
@@ -150,6 +153,7 @@ function App() {
         isEditing={isEditing}
         onUpdateOrder={updateServiceOrder}
       />
+
       {/* Main action buttons */}
       <div className="main-actions">
         <button
@@ -169,6 +173,7 @@ function App() {
           </button>
         )}
       </div>
+
       {/* Settings at the bottom */}
       <div className="settings-section">
         <button
@@ -187,10 +192,11 @@ function App() {
           />
         </div>
       </div>
+
       {/* Version footer */}
       <div className="version-footer">
         <div className="version-info">
-          <span className="version-text">גרסה 1.1.1</span>
+          <span className="version-text">גרסה 1.1.2</span>
           <button
             className="changelog-btn"
             onClick={() => setShowChangelog(!showChangelog)}
@@ -202,10 +208,19 @@ function App() {
         {showChangelog && (
           <div className="changelog-container">
             <div className="changelog-content">
-              <h4>🆕 מה חדש בגרסה 1.1.1:</h4>
+              <h4>🆕 מה חדש בגרסה 1.1.2:</h4>
 
               <div className="changelog-section">
-                <h5>🐛 תיקונים:</h5>
+                <h5>✨ שיפורים:</h5>
+                <ul>
+                  <li>כפתור "עריכה ידנית" זמין תמיד</li>
+                  <li>ניתן לערוך סדר גם ללא הגרלה</li>
+                  <li>חוויית משתמש משופרת</li>
+                </ul>
+              </div>
+
+              <div className="changelog-section">
+                <h5>🐛 גרסה 1.1.1 - תיקונים:</h5>
                 <ul>
                   <li>תוקן תצוגת רשימת השינויים</li>
                   <li>עודכנה רשימת העובדים</li>
@@ -213,12 +228,11 @@ function App() {
               </div>
 
               <div className="changelog-section">
-                <h5>📋 גרסה 1.1.0 - תכונות קודמות:</h5>
+                <h5>📋 גרסה 1.1.0 - תכונות עיקריות:</h5>
                 <ul>
                   <li>עריכה ידנית של סדר ההפסקות</li>
                   <li>גרירה ושחרור במחשב</li>
                   <li>חצים במכשירים ניידים</li>
-                  <li>ממשק משופר ותמיכה טובה במובייל</li>
                 </ul>
               </div>
             </div>
