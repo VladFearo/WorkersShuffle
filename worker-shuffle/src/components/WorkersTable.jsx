@@ -109,17 +109,7 @@ const WorkersTable = ({
   };
 
   // === SHARED HANDLERS ===
-  const handleNameChange = (index, newName) => {
-    if (!isEditing) return;
-
-    const newWorkers = [...editableWorkers];
-    newWorkers[index] = { ...newWorkers[index], name: newName };
-    setEditableWorkers(newWorkers);
-
-    if (onUpdateOrder) {
-      onUpdateOrder(newWorkers);
-    }
-  };
+  // Removed handleNameChange - no name editing in manual mode
 
   return (
     <div className="workers-table-container">
@@ -159,18 +149,7 @@ const WorkersTable = ({
               }
             >
               <td className="shuffle-order">{index + 1}</td>
-              <td className="worker-name-cell">
-                {isEditing ? (
-                  <input
-                    type="text"
-                    value={worker.name}
-                    onChange={(e) => handleNameChange(index, e.target.value)}
-                    className="name-edit-input"
-                  />
-                ) : (
-                  worker.name
-                )}
-              </td>
+              <td className="worker-name-cell">{worker.name}</td>
 
               {/* Mobile: Arrow buttons */}
               {isEditing && isMobile && (
@@ -212,8 +191,8 @@ const WorkersTable = ({
       {isEditing && editableWorkers.length > 0 && (
         <p className="edit-instructions">
           {isMobile
-            ? "📱 השתמש בחצים כדי לשנות סדר | ✏️ לחץ על השם כדי לערוך"
-            : "🖱️ גרור ושחרר כדי לשנות סדר | ✏️ לחץ על השם כדי לערוך"}
+            ? "📱 השתמש בחצים כדי לשנות סדר"
+            : "🖱️ גרור ושחרר כדי לשנות סדר"}
         </p>
       )}
     </div>
