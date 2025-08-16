@@ -248,7 +248,7 @@ function App() {
       {/* Version footer */}
       <div className="version-footer">
         <div className="version-info">
-          <span className="version-text">גרסה 1.2.0</span>
+          <span className="version-text">גרסה 1.3.0</span>
           <button
             className="changelog-btn"
             onClick={() => setShowChangelog(!showChangelog)}
@@ -260,10 +260,20 @@ function App() {
         {showChangelog && (
           <div className="changelog-container">
             <div className="changelog-content">
-              <h4>🆕 מה חדש בגרסה 1.2.0:</h4>
+              <h4>🆕 מה חדש בגרסה 1.3.0:</h4>
 
               <div className="changelog-section">
-                <h5>🔒 תכונה חדשה - נעילת עובדים:</h5>
+                <h5>⏰ זיהוי זמן חכם:</h5>
+                <ul>
+                  <li>הוספת כותרות אוטומטיות לוואטסאפ לפי זמן</li>
+                  <li>בוקר (9:00-12:00): "הפסקות בוקר החל מ־10:00"</li>
+                  <li>צהריים (12:01-17:00): "הפסקות צהריים החל מ־14:00"</li>
+                  <li>זיהוי לפי שעון ישראל אוטומטית</li>
+                </ul>
+              </div>
+
+              <div className="changelog-section">
+                <h5>🔒 גרסה 1.2.0 - נעילת עובדים:</h5>
                 <ul>
                   <li>כפתור נעילה חדש בכל שורת עובד</li>
                   <li>עובדים נעולים נשארים במקום בזמן הגרלה</li>
