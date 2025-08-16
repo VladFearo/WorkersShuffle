@@ -1,0 +1,186 @@
+/* Hold Status Indicator */
+.hold-status-indicator {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 2px solid #f59e0b;
+  border-radius: 8px;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.hold-status-text {
+  color: #92400e;
+  font-weight: bold;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Hold Button Styles */
+.hold-control {
+  padding: 8px !important;
+  text-align: center;
+  min-width: 50px;
+  vertical-align: middle;
+}
+
+.hold-btn {
+  width: 32px;
+  height: 32px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  background: white;
+  margin: 0 auto;
+}
+
+.hold-btn.unheld {
+  border-color: #d1d5db;
+  color: #6b7280;
+}
+
+.hold-btn.unheld:hover {
+  border-color: #f59e0b;
+  color: #f59e0b;
+  background: #fef3c7;
+  transform: scale(1.1);
+}
+
+.hold-btn.held {
+  border-color: #f59e0b;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+}
+
+.hold-btn.held:hover {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  transform: scale(1.05);
+  box-shadow: 0 3px 12px rgba(245, 158, 11, 0.5);
+}
+
+/* Held Worker Styles */
+.held-worker {
+  background: linear-gradient(135deg, #fef3c7, #fed7aa) !important;
+  border: 2px solid #f59e0b !important;
+}
+
+.held-worker:hover {
+  background: linear-gradient(135deg, #fed7aa, #fdba74) !important;
+}
+
+.worker-name-cell.held {
+  font-weight: bold;
+  color: #92400e;
+}
+
+.held-indicator {
+  font-size: 14px;
+  margin-left: 5px;
+}
+
+/* Drag Handle Disabled State */
+.drag-icon.disabled {
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.drag-handle .drag-icon.disabled:hover {
+  color: #9ca3af !important;
+  transform: none !important;
+}
+
+/* Instructions Updates */
+.hold-instructions {
+  margin-top: 15px;
+  padding: 12px;
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  border: 2px solid #0ea5e9;
+  border-radius: 8px;
+  color: #0c4a6e;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+  .hold-status-indicator {
+    padding: 10px 15px;
+    margin-bottom: 15px;
+  }
+  
+  .hold-status-text {
+    font-size: 13px;
+  }
+  
+  .hold-btn {
+    width: 36px; /* Slightly larger touch targets on mobile */
+    height: 36px;
+    font-size: 16px;
+  }
+  
+  .hold-control {
+    min-width: 45px;
+    padding: 4px !important;
+  }
+  
+  .held-indicator {
+    font-size: 12px;
+  }
+  
+  .hold-instructions {
+    font-size: 13px;
+    padding: 10px;
+  }
+  
+  /* Mobile table adjustments for held workers */
+  .workers-table.mobile .held-worker td {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .workers-table.mobile .worker-name-cell.held {
+    font-size: 15px;
+  }
+}
+
+/* Desktop Specific Styles */
+@media (min-width: 769px) {
+  .hold-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  
+  /* Better spacing on desktop */
+  .hold-control {
+    min-width: 55px;
+  }
+  
+  /* Desktop hover effects */
+  .hold-btn:hover {
+    transform: scale(1.1);
+  }
+  
+  .held-worker:hover {
+    transform: scale(1.01);
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+  }
+}
+
+/* Animation for newly held workers */
+@keyframes holdGlow {
+  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
+.hold-btn.held {
+  animation: holdGlow 0.6s ease-out;
+}

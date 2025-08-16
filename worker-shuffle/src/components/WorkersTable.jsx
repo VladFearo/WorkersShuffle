@@ -7,6 +7,7 @@ const WorkersTable = ({
   shuffledWorkers,
   isEditing = false,
   onUpdateOrder,
+  onToggleHold, // New prop for toggling hold status
 }) => {
   // Use shuffled workers if available, otherwise use original order
   const displayWorkers = shuffledWorkers.length > 0 ? shuffledWorkers : workers;
@@ -108,8 +109,12 @@ const WorkersTable = ({
     }
   };
 
-  // === SHARED HANDLERS ===
-  // Removed handleNameChange - no name editing in manual mode
+  // === HOLD TOGGLE HANDLER ===
+  const handleToggleHold = (workerId) => {
+    if (onToggleHold) {
+      onToggleHold(workerId);
+    }
+  };
 
   return (
     <div className="workers-table-container">
@@ -124,6 +129,7 @@ const WorkersTable = ({
           <tr>
             <th>סדר</th>
             <th>שם</th>
+            <th>נעל</th>
             {isEditing && isMobile && <th>הזז</th>}
             {isEditing && !isMobile && <th>גרור</th>}
           </tr>
@@ -133,23 +139,42 @@ const WorkersTable = ({
             <tr
               key={worker.id}
               // Drag and drop props for desktop
-              draggable={isEditing && !isMobile}
+              draggable={isEditing && !isMobile && !worker.isHeld}
               onDragStart={
-                !isMobile ? (e) => handleDragStart(e, index) : undefined
+                !isMobile && !worker.isHeld
+                  ? (e) => handleDragStart(e, index)
+                  : undefined
               }
-              onDragEnd={!isMobile ? handleDragEnd : undefined}
+              onDragEnd={
+                !isMobile && !worker.isHeld ? handleDragEnd : undefined
+              }
               onDragOver={!isMobile ? handleDragOver : undefined}
               onDrop={!isMobile ? (e) => handleDrop(e, index) : undefined}
-              className={
-                isEditing
-                  ? isMobile
-                    ? "editable mobile-editable"
-                    : "editable draggable"
-                  : ""
-              }
+              className={`
+                ${
+                  isEditing
+                    ? isMobile
+                      ? "editable mobile-editable"
+                      : "editable draggable"
+                    : ""
+                }
+                ${worker.isHeld ? "held-worker" : ""}
+              `.trim()}
             >
               <td className="shuffle-order">{index + 1}</td>
-              <td className="worker-name-cell">{worker.name}</td>
+              <td className={`worker-name-cell ${worker.isHeld ? "held" : ""}`}>
+                {worker.name}
+                {worker.isHeld && <span className="held-indicator"> 🔒</span>}
+              </td>
+              <td className="hold-control">
+                <button
+                  onClick={() => handleToggleHold(worker.id)}
+                  className={`hold-btn ${worker.isHeld ? "held" : "unheld"}`}
+                  title={worker.isHeld ? "בטל נעילה" : "נעל במקום"}
+                >
+                  {worker.isHeld ? "🔒" : "🔓"}
+                </button>
+              </td>
 
               {/* Mobile: Arrow buttons */}
               {isEditing && isMobile && (
@@ -157,7 +182,7 @@ const WorkersTable = ({
                   <div className="move-buttons">
                     <button
                       onClick={() => moveWorkerUp(index)}
-                      disabled={index === 0}
+                      disabled={index === 0 || worker.isHeld}
                       className="move-btn move-up"
                       aria-label="הזז למעלה"
                     >
@@ -165,7 +190,9 @@ const WorkersTable = ({
                     </button>
                     <button
                       onClick={() => moveWorkerDown(index)}
-                      disabled={index === editableWorkers.length - 1}
+                      disabled={
+                        index === editableWorkers.length - 1 || worker.isHeld
+                      }
                       className="move-btn move-down"
                       aria-label="הזז למטה"
                     >
@@ -178,7 +205,11 @@ const WorkersTable = ({
               {/* Desktop: Drag handle */}
               {isEditing && !isMobile && (
                 <td className="drag-handle">
-                  <span className="drag-icon">⋮⋮</span>
+                  <span
+                    className={`drag-icon ${worker.isHeld ? "disabled" : ""}`}
+                  >
+                    {worker.isHeld ? "🔒" : "⋮⋮"}
+                  </span>
                 </td>
               )}
             </tr>
@@ -191,8 +222,14 @@ const WorkersTable = ({
       {isEditing && editableWorkers.length > 0 && (
         <p className="edit-instructions">
           {isMobile
-            ? "📱 השתמש בחצים כדי לשנות סדר"
-            : "🖱️ גרור ושחרר כדי לשנות סדר"}
+            ? "📱 השתמש בחצים כדי לשנות סדר • 🔒 לחץ על המנעול כדי לנעול עובד במקום"
+            : "🖱️ גרור ושחרר כדי לשנות סדר • 🔒 לחץ על המנעול כדי לנעול עובד במקום"}
+        </p>
+      )}
+
+      {!isEditing && editableWorkers.length > 0 && (
+        <p className="hold-instructions">
+          🔒 לחץ על המנעול כדי לנעול עובד במקום בהגרלה הבאה
         </p>
       )}
     </div>

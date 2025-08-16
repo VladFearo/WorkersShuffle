@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import WorkersTable from "./components/WorkersTable";
 import WorkerSettings from "./components/WorkerSettings";
 import { defaultWorkers } from "./data/defaultWorkers";
-import { shuffleArray } from "./utils/shuffle";
+import { shuffleArray, smartShuffle } from "./utils/shuffle";
 import { loadWorkers, saveWorkers, clearWorkers } from "./utils/localStorage";
 import {
   getTechnicalWorkingToday,
@@ -15,8 +15,15 @@ import { formatForWhatsApp } from "./utils/whatsappFormatter";
 import { WORKER_TYPES } from "./constants/workerTypes";
 
 function App() {
-  // Load workers from localStorage or use defaults
-  const [workers, setWorkers] = useState(() => loadWorkers(defaultWorkers));
+  // Load workers from localStorage or use defaults, ensure all workers have isHeld property
+  const [workers, setWorkers] = useState(() => {
+    const loadedWorkers = loadWorkers(defaultWorkers);
+    // Ensure all workers have isHeld property (for backward compatibility)
+    return loadedWorkers.map((worker) => ({
+      ...worker,
+      isHeld: worker.isHeld ?? false,
+    }));
+  });
 
   // Shuffle states
   const [shuffledTechnical, setShuffledTechnical] = useState([]);
@@ -40,16 +47,16 @@ function App() {
     setShuffledService([]);
   };
 
-  // Single shuffle function for both groups
+  // Smart shuffle function for both groups
   const shuffleBothGroups = () => {
     const technical = getTechnicalWorkingToday(workers);
     const service = getServiceWorkingToday(workers);
 
     if (technical.length > 0) {
-      setShuffledTechnical(shuffleArray(technical));
+      setShuffledTechnical(smartShuffle(shuffledTechnical, technical));
     }
     if (service.length > 0) {
-      setShuffledService(shuffleArray(service));
+      setShuffledService(smartShuffle(shuffledService, service));
     }
   };
 
@@ -66,6 +73,28 @@ function App() {
   // Update shuffled order for service workers
   const updateServiceOrder = (newOrder) => {
     setShuffledService(newOrder);
+  };
+
+  // Toggle hold status for a worker
+  const toggleWorkerHold = (workerId) => {
+    setWorkers((prevWorkers) =>
+      prevWorkers.map((worker) =>
+        worker.id === workerId ? { ...worker, isHeld: !worker.isHeld } : worker
+      )
+    );
+
+    // Update shuffled arrays if they exist
+    setShuffledTechnical((prev) =>
+      prev.map((worker) =>
+        worker.id === workerId ? { ...worker, isHeld: !worker.isHeld } : worker
+      )
+    );
+
+    setShuffledService((prev) =>
+      prev.map((worker) =>
+        worker.id === workerId ? { ...worker, isHeld: !worker.isHeld } : worker
+      )
+    );
   };
 
   // Copy to clipboard function
@@ -88,6 +117,7 @@ function App() {
       name: name.trim(),
       group,
       isWorkingToday: true,
+      isHeld: false, // New workers start unheld
     };
     setWorkers([...workers, newWorker]);
     // Clear shuffles when workers change
@@ -115,9 +145,29 @@ function App() {
     setShuffledService([]);
   };
 
+  // Count held workers for display
+  const heldTechnicalCount = getTechnicalWorkingToday(workers).filter(
+    (w) => w.isHeld
+  ).length;
+  const heldServiceCount = getServiceWorkingToday(workers).filter(
+    (w) => w.isHeld
+  ).length;
+
   return (
     <div className="app-container">
       <h1 className="app-title">הגרלת הפסקות עובדים</h1>
+
+      {/* Hold status indicator */}
+      {(heldTechnicalCount > 0 || heldServiceCount > 0) && (
+        <div className="hold-status-indicator">
+          <p className="hold-status-text">
+            🔒 עובדים נעולים:
+            {heldTechnicalCount > 0 && ` טכני (${heldTechnicalCount})`}
+            {heldTechnicalCount > 0 && heldServiceCount > 0 && " • "}
+            {heldServiceCount > 0 && ` שירות (${heldServiceCount})`}
+          </p>
+        </div>
+      )}
 
       {/* Manual Edit Button - Always visible */}
       <div className="edit-button-container">
@@ -143,6 +193,7 @@ function App() {
         shuffledWorkers={shuffledTechnical}
         isEditing={isEditing}
         onUpdateOrder={updateTechnicalOrder}
+        onToggleHold={toggleWorkerHold}
       />
 
       <WorkersTable
@@ -152,6 +203,7 @@ function App() {
         shuffledWorkers={shuffledService}
         isEditing={isEditing}
         onUpdateOrder={updateServiceOrder}
+        onToggleHold={toggleWorkerHold}
       />
 
       {/* Main action buttons */}
@@ -196,7 +248,7 @@ function App() {
       {/* Version footer */}
       <div className="version-footer">
         <div className="version-info">
-          <span className="version-text">גרסה 1.1.2</span>
+          <span className="version-text">גרסה 1.2.0</span>
           <button
             className="changelog-btn"
             onClick={() => setShowChangelog(!showChangelog)}
@@ -208,22 +260,24 @@ function App() {
         {showChangelog && (
           <div className="changelog-container">
             <div className="changelog-content">
-              <h4>🆕 מה חדש בגרסה 1.1.2:</h4>
+              <h4>🆕 מה חדש בגרסה 1.2.0:</h4>
 
               <div className="changelog-section">
-                <h5>✨ שיפורים:</h5>
+                <h5>🔒 תכונה חדשה - נעילת עובדים:</h5>
                 <ul>
-                  <li>כפתור "עריכה ידנית" זמין תמיד</li>
-                  <li>ניתן לערוך סדר גם ללא הגרלה</li>
-                  <li>חוויית משתמש משופרת</li>
+                  <li>כפתור נעילה חדש בכל שורת עובד</li>
+                  <li>עובדים נעולים נשארים במקום בזמן הגרלה</li>
+                  <li>מחוון עובדים נעולים למעלה</li>
+                  <li>עובדים נעולים לא ניתנים לגרירה בעריכה</li>
                 </ul>
               </div>
 
               <div className="changelog-section">
-                <h5>🐛 גרסה 1.1.1 - תיקונים:</h5>
+                <h5>✨ גרסה 1.1.2 - שיפורים:</h5>
                 <ul>
-                  <li>תוקן תצוגת רשימת השינויים</li>
-                  <li>עודכנה רשימת העובדים</li>
+                  <li>כפתור "עריכה ידנית" זמין תמיד</li>
+                  <li>ניתן לערוך סדר גם ללא הגרלה</li>
+                  <li>חוויית משתמש משופרת</li>
                 </ul>
               </div>
 
