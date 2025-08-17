@@ -39,7 +39,7 @@ export const formatForWhatsApp = (shuffledTechnical, shuffledService) => {
   if (breakType === 'morning') {
     text += "🌅 הפסקות בוקר החל מ־10:00\n\n";
   } else {
-    text += "🌞 הפסקות צהריים החל מ־14:00\n\n";
+    text += "🌞 הפסקות צהריים החל מ־13:00\n\n";
   }
 
   // Technical workers
