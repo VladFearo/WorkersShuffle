@@ -1,0 +1,88 @@
+/* Hebrew Greeting Component Styles */
+.hebrew-greeting-container {
+  text-align: center;
+  margin-bottom: 25px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  border-radius: 12px;
+  border: 2px solid #0ea5e9;
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
+}
+
+.hebrew-greeting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 0 10px 0;
+  color: #0c4a6e;
+  font-size: 2rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(12, 74, 110, 0.1);
+}
+
+.greeting-emoji {
+  font-size: 2.2rem;
+  animation: gentle-pulse 3s ease-in-out infinite;
+}
+
+.greeting-text {
+  background: linear-gradient(135deg, #0ea5e9, #0c4a6e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: #0c4a6e; /* Fallback for browsers that don't support background-clip */
+}
+
+.hebrew-date {
+  color: #0369a1;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0;
+  opacity: 0.9;
+}
+
+@keyframes gentle-pulse {
+  0%, 100% { 
+    transform: scale(1); 
+  }
+  50% { 
+    transform: scale(1.05); 
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .hebrew-greeting-container {
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .hebrew-greeting {
+    font-size: 1.6rem;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .greeting-emoji {
+    font-size: 1.8rem;
+  }
+  
+  .hebrew-date {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hebrew-greeting {
+    font-size: 1.4rem;
+  }
+  
+  .greeting-emoji {
+    font-size: 1.6rem;
+  }
+  
+  .hebrew-date {
+    font-size: 0.9rem;
+  }
+}

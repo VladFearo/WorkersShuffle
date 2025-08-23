@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import WorkersTable from "./components/WorkersTable";
 import WorkerSettings from "./components/WorkerSettings";
+import HebrewGreeting from "./components/HebrewGreeting";
 import { defaultWorkers } from "./data/defaultWorkers";
-import { shuffleArray, smartShuffle } from "./utils/shuffle";
+import { smartShuffle } from "./utils/shuffle";
 import { loadWorkers, saveWorkers, clearWorkers } from "./utils/localStorage";
 import {
   getTechnicalWorkingToday,
@@ -12,7 +13,6 @@ import {
   generateNextId,
 } from "./utils/workerHelpers";
 import { formatForWhatsApp } from "./utils/whatsappFormatter";
-import { WORKER_TYPES } from "./constants/workerTypes";
 
 function App() {
   // Load workers from localStorage or use defaults, ensure all workers have isHeld property
@@ -155,6 +155,7 @@ function App() {
 
   return (
     <div className="app-container">
+      <HebrewGreeting />
       <h1 className="app-title">הגרלת הפסקות עובדים</h1>
 
       {/* Hold status indicator */}
