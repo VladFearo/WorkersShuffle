@@ -356,7 +356,7 @@ function App() {
       {/* Version footer */}
       <div className="version-footer">
         <div className="version-info">
-          <span className="version-text">גרסה 1.6.0</span>
+          <span className="version-text">גרסה 1.6.1</span>
           <button className="changelog-btn" onClick={toggleChangelog}>
             {showChangelog ? "סגור ▲" : "מה חדש? ▼"}
           </button>
