@@ -20,10 +20,23 @@ const WorkersTable = ({
   // Local state for editing - only maintain order changes, not duplicate all data
   const [workerOrder, setWorkerOrder] = useState([]);
 
+  // State to track if component has loaded (to prevent color shift)
+  const [isLoaded, setIsLoaded] = useState(false);
+
   // Update order when displayWorkers changes
   useEffect(() => {
     setWorkerOrder(displayWorkers.map((worker) => worker.id));
   }, [displayWorkers]);
+
+  // Mark component as loaded after initial render
+  useEffect(() => {
+    // Use a small delay to ensure proper paint
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Get ordered workers based on current order state
   const orderedWorkers = workerOrder
@@ -150,7 +163,7 @@ const WorkersTable = ({
       <table
         className={`workers-table ${type} ${isEditing ? "editing" : ""} ${
           isMobile ? "mobile" : "desktop"
-        } ${isShuffling ? "shuffle-success" : ""}`}
+        } ${isShuffling ? "shuffle-success" : ""} ${isLoaded ? "loaded" : ""}`}
       >
         <thead>
           <tr>

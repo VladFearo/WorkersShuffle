@@ -1,27 +1,34 @@
 /* Simple Shuffle Animation - Text fade with uniform row colors */
 
-.workers-table tbody tr {
-  transition: all 0.4s ease-in-out;
+/* Prevent transitions on page load to avoid color shifts */
+.workers-table * {
+  transition: none !important;
 }
 
-/* Uniform shuffling color for all rows during animation */
-.workers-table tbody tr.shuffle-moving {
+/* Enable transitions only after component is loaded */
+.workers-table.loaded tbody tr {
+  transition: all 0.4s ease-in-out !important;
+}
+
+/* Uniform shuffling color for all rows during animation - override normal colors */
+.workers-table.loaded tbody tr.shuffle-moving {
   background-color: #fafaf9 !important;
   border-color: #e7e5e4 !important;
+  transition: all 0.4s ease-in-out !important;
 }
 
-/* Held workers keep their special held styling */
-.workers-table tbody tr.shuffle-moving.held-worker {
+/* Held workers keep their special held styling during shuffle */
+.workers-table.loaded tbody tr.shuffle-moving.held-worker {
   background: linear-gradient(135deg, #fef3c7, #fed7aa) !important;
   border-color: #f59e0b !important;
 }
 
 /* Single animation rule for ALL text cells - no nth-child variations */
-.workers-table tbody tr.shuffle-moving:not(.held-worker) .worker-name-cell,
-.workers-table tbody tr.shuffle-moving:not(.held-worker) .shuffle-order {
+.workers-table.loaded tbody tr.shuffle-moving:not(.held-worker) .worker-name-cell,
+.workers-table.loaded tbody tr.shuffle-moving:not(.held-worker) .shuffle-order {
   animation: shuffleBlur 0.4s ease-in-out !important;
-  animation-delay: 0s !important; /* Force no delay */
-  animation-duration: 0.4s !important; /* Force same duration */
+  animation-delay: 0s !important;
+  animation-duration: 0.4s !important;
 }
 
 /* Single blur animation for everything */
@@ -53,4 +60,9 @@
 .main-shuffle-btn.shuffling {
   transform: scale(0.95);
   opacity: 0.8;
+}
+
+/* Enable smooth transitions for loaded tables but preserve original colors */
+.workers-table.loaded tbody tr:hover {
+  transition: all 0.2s ease !important;
 }

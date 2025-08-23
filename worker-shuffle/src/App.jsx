@@ -53,9 +53,15 @@ function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
+      // Enable transitions after loading is complete
+      document.body.classList.add("transitions-enabled");
     }, 800); // Show skeleton for 800ms
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      // Cleanup - remove the class on unmount
+      document.body.classList.remove("transitions-enabled");
+    };
   }, []);
 
   // Debounced save function - only saves after 500ms of no changes
@@ -264,8 +270,10 @@ function App() {
         </div>
       )}
 
-      {/* Manual Edit Button - Always visible */}
-      {!isLoading && (
+      {/* Manual Edit Button */}
+      {isLoading ? (
+        <EditButtonSkeleton />
+      ) : (
         <div className="edit-button-container">
           <button
             className={`edit-toggle-btn ${isEditing ? "editing" : ""}`}
