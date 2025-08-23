@@ -1,11 +1,25 @@
+// Cache for break type to avoid repeated timezone calculations
+let breakTypeCache = {
+  type: null,
+  timestamp: 0,
+  cacheValidMinutes: 30 // Cache for 30 minutes
+};
+
 // Function to determine if it's morning or afternoon break time
 const getBreakType = () => {
-  // Get current time in Israeli timezone (Asia/Jerusalem)
-  const now = new Date();
-  const israelTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Jerusalem" }));
+  const now = Date.now();
+  
+  // Check if cache is still valid (within 30 minutes)
+  if (breakTypeCache.type && (now - breakTypeCache.timestamp) < breakTypeCache.cacheValidMinutes * 60 * 1000) {
+    return breakTypeCache.type;
+  }
 
-  const hour = israelTime.getHours();
-  const minutes = israelTime.getMinutes();
+  // Get current time in Israeli timezone (Asia/Jerusalem)
+  const israelTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Jerusalem" });
+  const date = new Date(israelTime);
+  
+  const hour = date.getHours();
+  const minutes = date.getMinutes();
   const currentTime = hour * 60 + minutes; // Convert to minutes since midnight
 
   // Morning break: 9:00 AM (540 minutes) to 12:00 PM (720 minutes)
@@ -16,18 +30,28 @@ const getBreakType = () => {
   const afternoonStart = 12 * 60 + 1; // 12:01 PM
   const afternoonEnd = 17 * 60; // 5:00 PM
 
+  let breakType;
   // If it's between 9:00 AM and 12:00 PM, it's morning break
   if (currentTime >= morningStart && currentTime <= morningEnd) {
-    return 'morning';
+    breakType = 'morning';
   }
   // If it's between 12:01 PM and 5:00 PM, it's afternoon break
   else if (currentTime >= afternoonStart && currentTime <= afternoonEnd) {
-    return 'afternoon';
+    breakType = 'afternoon';
   }
   // Default to morning if outside normal hours (early morning, late evening)
   else {
-    return 'morning';
+    breakType = 'morning';
   }
+
+  // Update cache
+  breakTypeCache = {
+    type: breakType,
+    timestamp: now,
+    cacheValidMinutes: 30
+  };
+
+  return breakType;
 };
 
 export const formatForWhatsApp = (shuffledTechnical, shuffledService) => {
@@ -60,4 +84,13 @@ export const formatForWhatsApp = (shuffledTechnical, shuffledService) => {
   }
 
   return text.trim();
+};
+
+// Export function to clear cache if needed (for testing or manual refresh)
+export const clearBreakTypeCache = () => {
+  breakTypeCache = {
+    type: null,
+    timestamp: 0,
+    cacheValidMinutes: 30
+  };
 };

@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useMobileDetection } from "../hooks/useMobileDetection";
 
 const WorkersTable = ({
   title,
@@ -7,114 +8,137 @@ const WorkersTable = ({
   shuffledWorkers,
   isEditing = false,
   onUpdateOrder,
-  onToggleHold, // New prop for toggling hold status
+  onToggleHold,
 }) => {
+  // Use optimized mobile detection hook
+  const isMobile = useMobileDetection();
+
   // Use shuffled workers if available, otherwise use original order
   const displayWorkers = shuffledWorkers.length > 0 ? shuffledWorkers : workers;
 
-  // Local state for editing
-  const [editableWorkers, setEditableWorkers] = useState([]);
-  const [isMobile, setIsMobile] = useState(false);
+  // Local state for editing - only maintain order changes, not duplicate all data
+  const [workerOrder, setWorkerOrder] = useState([]);
 
-  // Detect mobile device
+  // Update order when displayWorkers changes
   useEffect(() => {
-    const checkIfMobile = () => {
-      const isTouchDevice =
-        "ontouchstart" in window || navigator.maxTouchPoints > 0;
-      const isSmallScreen = window.innerWidth <= 768;
-      setIsMobile(isTouchDevice && isSmallScreen);
-    };
+    setWorkerOrder(displayWorkers.map((worker) => worker.id));
+  }, [displayWorkers]);
 
-    checkIfMobile();
-    window.addEventListener("resize", checkIfMobile);
-
-    return () => window.removeEventListener("resize", checkIfMobile);
-  }, []);
-
-  // Update editable workers when displayWorkers or isEditing changes
-  useEffect(() => {
-    setEditableWorkers([...displayWorkers]);
-  }, [displayWorkers, isEditing]);
+  // Get ordered workers based on current order state
+  const orderedWorkers = workerOrder
+    .map((id) => displayWorkers.find((worker) => worker.id === id))
+    .filter(Boolean);
 
   // === DRAG AND DROP HANDLERS (Desktop) ===
-  const handleDragStart = (e, index) => {
-    if (!isEditing || isMobile) return;
-    e.dataTransfer.setData("text/plain", index);
-    e.target.style.opacity = "0.5";
-  };
+  const handleDragStart = useCallback(
+    (e, index) => {
+      if (!isEditing || isMobile) return;
+      e.dataTransfer.setData("text/plain", index);
+      e.target.style.opacity = "0.5";
+    },
+    [isEditing, isMobile]
+  );
 
-  const handleDragEnd = (e) => {
-    if (!isEditing || isMobile) return;
-    e.target.style.opacity = "1";
-  };
+  const handleDragEnd = useCallback(
+    (e) => {
+      if (!isEditing || isMobile) return;
+      e.target.style.opacity = "1";
+    },
+    [isEditing, isMobile]
+  );
 
-  const handleDragOver = (e) => {
-    if (!isEditing || isMobile) return;
-    e.preventDefault();
-  };
+  const handleDragOver = useCallback(
+    (e) => {
+      if (!isEditing || isMobile) return;
+      e.preventDefault();
+    },
+    [isEditing, isMobile]
+  );
 
-  const handleDrop = (e, dropIndex) => {
-    if (!isEditing || isMobile) return;
-    e.preventDefault();
+  const handleDrop = useCallback(
+    (e, dropIndex) => {
+      if (!isEditing || isMobile) return;
+      e.preventDefault();
 
-    const dragIndex = parseInt(e.dataTransfer.getData("text/plain"));
+      const dragIndex = parseInt(e.dataTransfer.getData("text/plain"));
+      if (dragIndex === dropIndex) return;
 
-    if (dragIndex === dropIndex) return;
+      const newOrder = [...workerOrder];
+      const draggedId = newOrder[dragIndex];
 
-    const newWorkers = [...editableWorkers];
-    const draggedWorker = newWorkers[dragIndex];
+      // Remove the dragged worker ID
+      newOrder.splice(dragIndex, 1);
+      // Insert at the new position
+      newOrder.splice(dropIndex, 0, draggedId);
 
-    // Remove the dragged worker
-    newWorkers.splice(dragIndex, 1);
+      setWorkerOrder(newOrder);
 
-    // Insert at the new position
-    newWorkers.splice(dropIndex, 0, draggedWorker);
+      // Update parent component with actual worker objects
+      const newWorkerOrder = newOrder
+        .map((id) => displayWorkers.find((worker) => worker.id === id))
+        .filter(Boolean);
 
-    setEditableWorkers(newWorkers);
-
-    // Update parent component
-    if (onUpdateOrder) {
-      onUpdateOrder(newWorkers);
-    }
-  };
+      if (onUpdateOrder) {
+        onUpdateOrder(newWorkerOrder);
+      }
+    },
+    [isEditing, isMobile, workerOrder, displayWorkers, onUpdateOrder]
+  );
 
   // === ARROW BUTTON HANDLERS (Mobile) ===
-  const moveWorkerUp = (index) => {
-    if (index === 0) return; // Already at top
+  const moveWorkerUp = useCallback(
+    (index) => {
+      if (index === 0) return; // Already at top
 
-    const newWorkers = [...editableWorkers];
-    const temp = newWorkers[index];
-    newWorkers[index] = newWorkers[index - 1];
-    newWorkers[index - 1] = temp;
+      const newOrder = [...workerOrder];
+      const temp = newOrder[index];
+      newOrder[index] = newOrder[index - 1];
+      newOrder[index - 1] = temp;
 
-    setEditableWorkers(newWorkers);
+      setWorkerOrder(newOrder);
 
-    if (onUpdateOrder) {
-      onUpdateOrder(newWorkers);
-    }
-  };
+      const newWorkerOrder = newOrder
+        .map((id) => displayWorkers.find((worker) => worker.id === id))
+        .filter(Boolean);
 
-  const moveWorkerDown = (index) => {
-    if (index === editableWorkers.length - 1) return; // Already at bottom
+      if (onUpdateOrder) {
+        onUpdateOrder(newWorkerOrder);
+      }
+    },
+    [workerOrder, displayWorkers, onUpdateOrder]
+  );
 
-    const newWorkers = [...editableWorkers];
-    const temp = newWorkers[index];
-    newWorkers[index] = newWorkers[index + 1];
-    newWorkers[index + 1] = temp;
+  const moveWorkerDown = useCallback(
+    (index) => {
+      if (index === workerOrder.length - 1) return; // Already at bottom
 
-    setEditableWorkers(newWorkers);
+      const newOrder = [...workerOrder];
+      const temp = newOrder[index];
+      newOrder[index] = newOrder[index + 1];
+      newOrder[index + 1] = temp;
 
-    if (onUpdateOrder) {
-      onUpdateOrder(newWorkers);
-    }
-  };
+      setWorkerOrder(newOrder);
+
+      const newWorkerOrder = newOrder
+        .map((id) => displayWorkers.find((worker) => worker.id === id))
+        .filter(Boolean);
+
+      if (onUpdateOrder) {
+        onUpdateOrder(newWorkerOrder);
+      }
+    },
+    [workerOrder, displayWorkers, onUpdateOrder]
+  );
 
   // === HOLD TOGGLE HANDLER ===
-  const handleToggleHold = (workerId) => {
-    if (onToggleHold) {
-      onToggleHold(workerId);
-    }
-  };
+  const handleToggleHold = useCallback(
+    (workerId) => {
+      if (onToggleHold) {
+        onToggleHold(workerId);
+      }
+    },
+    [onToggleHold]
+  );
 
   return (
     <div className="workers-table-container">
@@ -135,7 +159,7 @@ const WorkersTable = ({
           </tr>
         </thead>
         <tbody>
-          {editableWorkers.map((worker, index) => (
+          {orderedWorkers.map((worker, index) => (
             <tr
               key={worker.id}
               // Drag and drop props for desktop
@@ -191,7 +215,7 @@ const WorkersTable = ({
                     <button
                       onClick={() => moveWorkerDown(index)}
                       disabled={
-                        index === editableWorkers.length - 1 || worker.isHeld
+                        index === orderedWorkers.length - 1 || worker.isHeld
                       }
                       className="move-btn move-down"
                       aria-label="הזז למטה"
@@ -219,7 +243,7 @@ const WorkersTable = ({
 
       {workers.length === 0 && <p className="empty-state">אין עובדים היום</p>}
 
-      {isEditing && editableWorkers.length > 0 && (
+      {isEditing && orderedWorkers.length > 0 && (
         <p className="edit-instructions">
           {isMobile
             ? "📱 השתמש בחצים כדי לשנות סדר • 🔒 לחץ על המנעול כדי לנעול עובד במקום"
@@ -227,7 +251,7 @@ const WorkersTable = ({
         </p>
       )}
 
-      {!isEditing && editableWorkers.length > 0 && (
+      {!isEditing && orderedWorkers.length > 0 && (
         <p className="hold-instructions">
           🔒 לחץ על המנעול כדי לנעול עובד במקום בהגרלה הבאה
         </p>
