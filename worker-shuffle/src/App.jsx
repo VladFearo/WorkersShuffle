@@ -2,10 +2,17 @@ import { useState, useEffect, useCallback } from "react";
 import WorkersTable from "./components/WorkersTable";
 import WorkerSettings from "./components/WorkerSettings";
 import HebrewGreeting from "./components/HebrewGreeting";
+import {
+  TableSkeleton,
+  GreetingSkeleton,
+  ActionsSkeleton,
+  EditButtonSkeleton,
+} from "./components/LoadingSkeleton";
 import { defaultWorkers } from "./data/defaultWorkers";
-import { shuffleArray, smartShuffle } from "./utils/shuffle";
+import { smartShuffle } from "./utils/shuffle";
 import { loadWorkers, saveWorkers, clearWorkers } from "./utils/localStorage";
 import { useDebounce } from "./hooks/useDebounce";
+import { useShuffleAnimation } from "./hooks/useShuffleAnimation";
 import {
   getTechnicalWorkingToday,
   getServiceWorkingToday,
@@ -17,13 +24,15 @@ import { formatForWhatsApp } from "./utils/whatsappFormatter";
 import { WORKER_TYPES } from "./constants/workerTypes";
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
   // Load workers from localStorage or use defaults, ensure all workers have isHeld property
   const [workers, setWorkers] = useState(() => {
     const loadedWorkers = loadWorkers(defaultWorkers);
-    // Ensure all workers have isHeld property (for backward compatibility)
+    // Ensure all workers have isHeld property AND clear all locks on page load
     return loadedWorkers.map((worker) => ({
       ...worker,
-      isHeld: worker.isHeld ?? false,
+      isHeld: false, // Always start with no locks on page load
     }));
   });
 
@@ -36,6 +45,18 @@ function App() {
   // Manual editing state
   const [isEditing, setIsEditing] = useState(false);
   const [showChangelog, setShowChangelog] = useState(false);
+
+  // Shuffle animation hook
+  const { isShuffling, animatedShuffle } = useShuffleAnimation();
+
+  // Simulate loading time and hide loading state
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800); // Show skeleton for 800ms
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Debounced save function - only saves after 500ms of no changes
   const debouncedSave = useDebounce((workersToSave) => {
@@ -84,18 +105,21 @@ function App() {
     [workers, shuffledTechnical, shuffledService]
   );
 
-  // Smart shuffle function for both groups
-  const shuffleBothGroups = useCallback(() => {
+  // Smart shuffle function for both groups with simple animation
+  const shuffleBothGroups = useCallback(async () => {
     const technical = getTechnicalWorkingToday(workers);
     const service = getServiceWorkingToday(workers);
 
-    if (technical.length > 0) {
-      setShuffledTechnical(smartShuffle(shuffledTechnical, technical));
-    }
-    if (service.length > 0) {
-      setShuffledService(smartShuffle(shuffledService, service));
-    }
-  }, [workers, shuffledTechnical, shuffledService]);
+    // Use simple animated shuffle
+    await animatedShuffle(() => {
+      if (technical.length > 0) {
+        setShuffledTechnical(smartShuffle(shuffledTechnical, technical));
+      }
+      if (service.length > 0) {
+        setShuffledService(smartShuffle(shuffledService, service));
+      }
+    });
+  }, [workers, shuffledTechnical, shuffledService, animatedShuffle]);
 
   // Update shuffled order for technical workers
   const updateTechnicalOrder = useCallback((newOrder) => {
@@ -216,12 +240,20 @@ function App() {
 
   return (
     <div className="app-container">
-      <HebrewGreeting />
+      <div className="app-header">
+        {isLoading ? <GreetingSkeleton /> : <HebrewGreeting />}
 
-      <h1 className="app-title">הגרלת הפסקות עובדים</h1>
+        <div className="main-title-section">
+          <h1 className="app-title">
+            <span className="title-icon">🎲</span>
+            <span className="title-text">הגרלת הפסקות עובדים</span>
+          </h1>
+          <p className="app-subtitle">ניהול וחלוקה חכמה של הפסקות עבודה</p>
+        </div>
+      </div>
 
       {/* Hold status indicator */}
-      {(heldTechnicalCount > 0 || heldServiceCount > 0) && (
+      {!isLoading && (heldTechnicalCount > 0 || heldServiceCount > 0) && (
         <div className="hold-status-indicator">
           <p className="hold-status-text">
             🔒 עובדים נעולים:
@@ -233,55 +265,69 @@ function App() {
       )}
 
       {/* Manual Edit Button - Always visible */}
-      <div className="edit-button-container">
-        <button
-          className={`edit-toggle-btn ${isEditing ? "editing" : ""}`}
-          onClick={toggleEditMode}
-          disabled={!hasWorkersToShuffle(workers)}
-        >
-          {isEditing ? "שמור" : "עריכה ידנית"}
-        </button>
-      </div>
-
-      <WorkersTable
-        title="הפסקות טכני"
-        workers={getTechnicalWorkingToday(workers)}
-        type="technical"
-        shuffledWorkers={shuffledTechnical}
-        isEditing={isEditing}
-        onUpdateOrder={updateTechnicalOrder}
-        onToggleHold={toggleWorkerHold}
-      />
-
-      <WorkersTable
-        title="הפסקות שירות"
-        workers={getServiceWorkingToday(workers)}
-        type="service"
-        shuffledWorkers={shuffledService}
-        isEditing={isEditing}
-        onUpdateOrder={updateServiceOrder}
-        onToggleHold={toggleWorkerHold}
-      />
-
-      {/* Main action buttons */}
-      <div className="main-actions">
-        <button
-          className="main-shuffle-btn"
-          onClick={shuffleBothGroups}
-          disabled={!hasWorkersToShuffle(workers)}
-        >
-          🎲 הגרל הפסקות לכולם
-        </button>
-
-        {hasShuffledResults(shuffledTechnical, shuffledService) && (
+      {!isLoading && (
+        <div className="edit-button-container">
           <button
-            className={`main-copy-btn ${copySuccess ? "success" : ""}`}
-            onClick={copyToWhatsApp}
+            className={`edit-toggle-btn ${isEditing ? "editing" : ""}`}
+            onClick={toggleEditMode}
+            disabled={!hasWorkersToShuffle(workers)}
           >
-            {copySuccess ? "הועתק! ✓" : "📱 העתק לוואטסאפ"}
+            {isEditing ? "שמור" : "עריכה ידנית"}
           </button>
-        )}
-      </div>
+        </div>
+      )}
+
+      {isLoading ? (
+        <>
+          <TableSkeleton title="הפסקות טכני" rowCount={3} />
+          <TableSkeleton title="הפסקות שירות" rowCount={4} />
+          <ActionsSkeleton />
+        </>
+      ) : (
+        <>
+          <WorkersTable
+            title="הפסקות טכני"
+            workers={getTechnicalWorkingToday(workers)}
+            type="technical"
+            shuffledWorkers={shuffledTechnical}
+            isEditing={isEditing}
+            isShuffling={isShuffling}
+            onUpdateOrder={updateTechnicalOrder}
+            onToggleHold={toggleWorkerHold}
+          />
+
+          <WorkersTable
+            title="הפסקות שירות"
+            workers={getServiceWorkingToday(workers)}
+            type="service"
+            shuffledWorkers={shuffledService}
+            isEditing={isEditing}
+            isShuffling={isShuffling}
+            onUpdateOrder={updateServiceOrder}
+            onToggleHold={toggleWorkerHold}
+          />
+
+          {/* Main action buttons */}
+          <div className="main-actions">
+            <button
+              className={`main-shuffle-btn ${isShuffling ? "shuffling" : ""}`}
+              onClick={shuffleBothGroups}
+              disabled={!hasWorkersToShuffle(workers) || isShuffling}
+            >
+              {isShuffling ? "🎲 מערבב..." : "🎲 הגרל הפסקות לכולם"}
+            </button>
+
+            {hasShuffledResults(shuffledTechnical, shuffledService) && (
+              <button
+                className={`main-copy-btn ${copySuccess ? "success" : ""}`}
+                onClick={copyToWhatsApp}
+              >
+                {copySuccess ? "הועתק! ✓" : "📱 העתק לוואטסאפ"}
+              </button>
+            )}
+          </div>
+        </>
+      )}
 
       {/* Settings at the bottom */}
       <div className="settings-section">
@@ -302,7 +348,7 @@ function App() {
       {/* Version footer */}
       <div className="version-footer">
         <div className="version-info">
-          <span className="version-text">גרסה 1.4.0</span>
+          <span className="version-text">גרסה 1.6.0</span>
           <button className="changelog-btn" onClick={toggleChangelog}>
             {showChangelog ? "סגור ▲" : "מה חדש? ▼"}
           </button>
@@ -311,7 +357,19 @@ function App() {
         {showChangelog && (
           <div className="changelog-container">
             <div className="changelog-content">
-              <h4>🆕 מה חדש בגרסה 1.4.0:</h4>
+              <h4>🆕 מה חדש בגרסה 1.6.0:</h4>
+
+              <div className="changelog-section">
+                <h5>🎨 עיצוב מחודש ומשופר:</h5>
+                <ul>
+                  <li>רקע מדורג עם דוגמאות עדינות במקום רקע ריק</li>
+                  <li>כותרת ראשית משופרת עם אייקון 🎲 ואנימציה</li>
+                  <li>כרטיסיות מעוצבות עם צללים ופינות מעוגלות</li>
+                  <li>תת-כותרת חדשה: "ניהול וחלוקה חכמה של הפסקות עבודה"</li>
+                  <li>טקסט בגרדיאנט צבעוני למראה מקצועי יותר</li>
+                  <li>שיפור היררכיה חזותית ורווחים</li>
+                </ul>
+              </div>
 
               <div className="changelog-section">
                 <h5>🌅 ברכות זמן בעברית:</h5>
@@ -333,6 +391,7 @@ function App() {
                   <li>ביטול הגרלות רק כשנדרש באמת</li>
                   <li>זיהוי מכשיר נייד משותף וממוטב</li>
                   <li>מטמון חכם לחישובי איזור זמן (חיסכון 95%)</li>
+                  <li>הסרת ייבוא מיותר של shuffleArray</li>
                 </ul>
               </div>
 

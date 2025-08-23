@@ -1,0 +1,220 @@
+/* Skeleton Loading Styles */
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0.3) 0%, 
+    rgba(255, 255, 255, 0.5) 50%, 
+    rgba(255, 255, 255, 0.3) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Table skeleton - match real table dimensions exactly */
+.skeleton-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.skeleton-header {
+  display: flex;
+  width: 100%;
+  height: 49px; /* Match real header height exactly */
+}
+
+.skeleton-row {
+  display: flex;
+  width: 100%;
+  height: 49px; /* Match real row height exactly */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.skeleton-header .skeleton-cell {
+  background: rgba(255, 255, 255, 0.2);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.skeleton-row .skeleton-cell {
+  background: rgba(255, 255, 255, 0.1);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.skeleton-cell {
+  flex: 1;
+  border-radius: 4px;
+  margin: 8px 4px; /* Match real cell padding */
+}
+
+.skeleton-cell:last-child {
+  border-right: none;
+}
+
+/* Loading instructions for tables */
+.skeleton-instructions {
+  margin-top: 15px;
+  color: rgba(100, 116, 139, 0.8);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  opacity: 1;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+/* Greeting skeleton - match real greeting dimensions */
+.hebrew-greeting-container {
+  margin-bottom: 25px; /* Same as real component */
+}
+
+.skeleton-greeting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 0 10px 0; /* Match real greeting margins */
+  height: 64px; /* Match real greeting height */
+}
+
+.skeleton-emoji {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.skeleton-text {
+  width: 200px;
+  height: 35px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.skeleton-date {
+  width: 280px;
+  height: 18px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 auto;
+}
+
+/* Main actions skeleton - match real button section */
+.main-actions {
+  margin: 40px 0 30px 0; /* Same as real component */
+  padding: 25px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(226, 232, 240, 0.2));
+  border-radius: 12px;
+  border: 2px solid rgba(229, 231, 235, 0.3);
+}
+
+.skeleton-button {
+  width: 280px;
+  height: 60px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+  opacity: 0.7;
+}
+
+.skeleton-button-text {
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  z-index: 2;
+  position: relative;
+}
+
+/* Edit button skeleton */
+.edit-button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.skeleton-edit-btn {
+  width: 140px;
+  height: 48px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.4);
+  opacity: 0.7;
+}
+
+.skeleton-edit-btn .skeleton-button-text {
+  font-size: 14px;
+  color: white;
+}
+
+/* Workers table container - ensure consistent spacing */
+.workers-table-container {
+  margin-bottom: 30px; /* Same as real component */
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .skeleton-text {
+    width: 150px;
+    height: 28px;
+  }
+  
+  .skeleton-date {
+    width: 200px;
+    height: 16px;
+  }
+  
+  .skeleton-button {
+    width: 90%;
+    max-width: 250px;
+    height: 54px; /* Match mobile button height */
+  }
+  
+  .skeleton-button-text {
+    font-size: 15px;
+  }
+  
+  .skeleton-edit-btn {
+    width: 90%;
+    max-width: 200px;
+    height: 50px;
+  }
+  
+  .skeleton-row,
+  .skeleton-header {
+    height: 45px; /* Match mobile row height */
+  }
+  
+  .skeleton-greeting {
+    height: 56px; /* Match mobile greeting height */
+  }
+  
+  .main-actions {
+    margin: 30px 0 20px 0; /* Match mobile margins */
+    padding: 20px 15px;
+  }
+  
+  .skeleton-instructions {
+    font-size: 13px;
+  }
+}

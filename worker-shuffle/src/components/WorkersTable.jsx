@@ -7,6 +7,7 @@ const WorkersTable = ({
   type,
   shuffledWorkers,
   isEditing = false,
+  isShuffling = false,
   onUpdateOrder,
   onToggleHold,
 }) => {
@@ -141,13 +142,15 @@ const WorkersTable = ({
   );
 
   return (
-    <div className="workers-table-container">
+    <div
+      className={`workers-table-container ${isShuffling ? "shuffling" : ""}`}
+    >
       <h2 className="table-title">{title}</h2>
 
       <table
         className={`workers-table ${type} ${isEditing ? "editing" : ""} ${
           isMobile ? "mobile" : "desktop"
-        }`}
+        } ${isShuffling ? "shuffle-success" : ""}`}
       >
         <thead>
           <tr>
@@ -183,6 +186,7 @@ const WorkersTable = ({
                     : ""
                 }
                 ${worker.isHeld ? "held-worker" : ""}
+                ${isShuffling ? "shuffle-moving" : ""}
               `.trim()}
             >
               <td className="shuffle-order">{index + 1}</td>

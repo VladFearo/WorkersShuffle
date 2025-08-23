@@ -1,0 +1,56 @@
+/* Simple Shuffle Animation - Text fade with uniform row colors */
+
+.workers-table tbody tr {
+  transition: all 0.4s ease-in-out;
+}
+
+/* Uniform shuffling color for all rows during animation */
+.workers-table tbody tr.shuffle-moving {
+  background-color: #fafaf9 !important;
+  border-color: #e7e5e4 !important;
+}
+
+/* Held workers keep their special held styling */
+.workers-table tbody tr.shuffle-moving.held-worker {
+  background: linear-gradient(135deg, #fef3c7, #fed7aa) !important;
+  border-color: #f59e0b !important;
+}
+
+/* Single animation rule for ALL text cells - no nth-child variations */
+.workers-table tbody tr.shuffle-moving:not(.held-worker) .worker-name-cell,
+.workers-table tbody tr.shuffle-moving:not(.held-worker) .shuffle-order {
+  animation: shuffleBlur 0.4s ease-in-out !important;
+  animation-delay: 0s !important; /* Force no delay */
+  animation-duration: 0.4s !important; /* Force same duration */
+}
+
+/* Single blur animation for everything */
+@keyframes shuffleBlur {
+  0% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.1;
+    filter: blur(8px);
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: scale(1);
+  }
+}
+
+/* Completely disable animation for held workers */
+.workers-table tbody tr.held-worker.shuffle-moving * {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Button animation */
+.main-shuffle-btn.shuffling {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
