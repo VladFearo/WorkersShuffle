@@ -5,6 +5,8 @@ export const useMobileDetection = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    let timeoutId;
+
     const checkIfMobile = () => {
       const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
       const isSmallScreen = window.innerWidth <= 768;
@@ -15,7 +17,6 @@ export const useMobileDetection = () => {
     checkIfMobile();
 
     // Debounced resize handler to avoid excessive calls
-    let timeoutId;
     const handleResize = () => {
       if (timeoutId) clearTimeout(timeoutId);
       timeoutId = setTimeout(checkIfMobile, 150);
@@ -25,7 +26,9 @@ export const useMobileDetection = () => {
     
     return () => {
       window.removeEventListener('resize', handleResize);
-      if (timeoutId) clearTimeout(timeoutId);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
   }, []);
 

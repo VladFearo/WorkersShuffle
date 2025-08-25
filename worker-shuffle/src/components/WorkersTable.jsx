@@ -17,31 +17,39 @@ const WorkersTable = ({
   // Use shuffled workers if available, otherwise use original order
   const displayWorkers = shuffledWorkers.length > 0 ? shuffledWorkers : workers;
 
-  // Local state for editing - only maintain order changes, not duplicate all data
-  const [workerOrder, setWorkerOrder] = useState([]);
+  // Local state for editing - ONLY used during drag and drop editing
+  const [editingOrder, setEditingOrder] = useState([]);
+  const [isCurrentlyEditing, setIsCurrentlyEditing] = useState(false);
 
   // State to track if component has loaded (to prevent color shift)
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Update order when displayWorkers changes
+  // When editing starts, initialize the editing order
   useEffect(() => {
-    setWorkerOrder(displayWorkers.map((worker) => worker.id));
-  }, [displayWorkers]);
+    if (isEditing && !isCurrentlyEditing) {
+      setEditingOrder(displayWorkers.map((worker) => worker.id));
+      setIsCurrentlyEditing(true);
+    } else if (!isEditing) {
+      setIsCurrentlyEditing(false);
+      setEditingOrder([]);
+    }
+  }, [isEditing, displayWorkers, isCurrentlyEditing]);
 
   // Mark component as loaded after initial render
   useEffect(() => {
-    // Use a small delay to ensure proper paint
     const timer = setTimeout(() => {
       setIsLoaded(true);
     }, 50);
-
     return () => clearTimeout(timer);
   }, []);
 
-  // Get ordered workers based on current order state
-  const orderedWorkers = workerOrder
-    .map((id) => displayWorkers.find((worker) => worker.id === id))
-    .filter(Boolean);
+  // Get the workers to display - use editing order only when actively editing
+  const workersToShow =
+    isCurrentlyEditing && editingOrder.length > 0
+      ? editingOrder
+          .map((id) => displayWorkers.find((w) => w.id === id))
+          .filter(Boolean)
+      : displayWorkers;
 
   // === DRAG AND DROP HANDLERS (Desktop) ===
   const handleDragStart = useCallback(
@@ -77,7 +85,7 @@ const WorkersTable = ({
       const dragIndex = parseInt(e.dataTransfer.getData("text/plain"));
       if (dragIndex === dropIndex) return;
 
-      const newOrder = [...workerOrder];
+      const newOrder = [...editingOrder];
       const draggedId = newOrder[dragIndex];
 
       // Remove the dragged worker ID
@@ -85,7 +93,7 @@ const WorkersTable = ({
       // Insert at the new position
       newOrder.splice(dropIndex, 0, draggedId);
 
-      setWorkerOrder(newOrder);
+      setEditingOrder(newOrder);
 
       // Update parent component with actual worker objects
       const newWorkerOrder = newOrder
@@ -96,20 +104,20 @@ const WorkersTable = ({
         onUpdateOrder(newWorkerOrder);
       }
     },
-    [isEditing, isMobile, workerOrder, displayWorkers, onUpdateOrder]
+    [isEditing, isMobile, editingOrder, displayWorkers, onUpdateOrder]
   );
 
   // === ARROW BUTTON HANDLERS (Mobile) ===
   const moveWorkerUp = useCallback(
     (index) => {
-      if (index === 0) return; // Already at top
+      if (index === 0) return;
 
-      const newOrder = [...workerOrder];
+      const newOrder = [...editingOrder];
       const temp = newOrder[index];
       newOrder[index] = newOrder[index - 1];
       newOrder[index - 1] = temp;
 
-      setWorkerOrder(newOrder);
+      setEditingOrder(newOrder);
 
       const newWorkerOrder = newOrder
         .map((id) => displayWorkers.find((worker) => worker.id === id))
@@ -119,19 +127,19 @@ const WorkersTable = ({
         onUpdateOrder(newWorkerOrder);
       }
     },
-    [workerOrder, displayWorkers, onUpdateOrder]
+    [editingOrder, displayWorkers, onUpdateOrder]
   );
 
   const moveWorkerDown = useCallback(
     (index) => {
-      if (index === workerOrder.length - 1) return; // Already at bottom
+      if (index === workersToShow.length - 1) return;
 
-      const newOrder = [...workerOrder];
+      const newOrder = [...editingOrder];
       const temp = newOrder[index];
       newOrder[index] = newOrder[index + 1];
       newOrder[index + 1] = temp;
 
-      setWorkerOrder(newOrder);
+      setEditingOrder(newOrder);
 
       const newWorkerOrder = newOrder
         .map((id) => displayWorkers.find((worker) => worker.id === id))
@@ -141,7 +149,7 @@ const WorkersTable = ({
         onUpdateOrder(newWorkerOrder);
       }
     },
-    [workerOrder, displayWorkers, onUpdateOrder]
+    [editingOrder, displayWorkers, onUpdateOrder, workersToShow.length]
   );
 
   // === HOLD TOGGLE HANDLER ===
@@ -175,10 +183,9 @@ const WorkersTable = ({
           </tr>
         </thead>
         <tbody>
-          {orderedWorkers.map((worker, index) => (
+          {workersToShow.map((worker, index) => (
             <tr
               key={worker.id}
-              // Drag and drop props for desktop
               draggable={isEditing && !isMobile && !worker.isHeld}
               onDragStart={
                 !isMobile && !worker.isHeld
@@ -232,7 +239,7 @@ const WorkersTable = ({
                     <button
                       onClick={() => moveWorkerDown(index)}
                       disabled={
-                        index === orderedWorkers.length - 1 || worker.isHeld
+                        index === workersToShow.length - 1 || worker.isHeld
                       }
                       className="move-btn move-down"
                       aria-label="הזז למטה"
@@ -260,7 +267,7 @@ const WorkersTable = ({
 
       {workers.length === 0 && <p className="empty-state">אין עובדים היום</p>}
 
-      {isEditing && orderedWorkers.length > 0 && (
+      {isEditing && workersToShow.length > 0 && (
         <p className="edit-instructions">
           {isMobile
             ? "📱 השתמש בחצים כדי לשנות סדר • 🔒 לחץ על המנעול כדי לנעול עובד במקום"
@@ -268,7 +275,7 @@ const WorkersTable = ({
         </p>
       )}
 
-      {!isEditing && orderedWorkers.length > 0 && (
+      {!isEditing && workersToShow.length > 0 && (
         <p className="hold-instructions">
           🔒 לחץ על המנעול כדי לנעול עובד במקום בהגרלה הבאה
         </p>

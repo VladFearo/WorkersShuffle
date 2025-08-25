@@ -145,17 +145,17 @@ function App() {
       )
     );
 
-    // Update shuffled arrays if they exist
+    // Update shuffled arrays only if worker exists in them
     setShuffledTechnical((prev) =>
-      prev.map((worker) =>
-        worker.id === workerId ? { ...worker, isHeld: !worker.isHeld } : worker
-      )
+      prev.some((w) => w.id === workerId)
+        ? prev.map((w) => (w.id === workerId ? { ...w, isHeld: !w.isHeld } : w))
+        : prev
     );
 
     setShuffledService((prev) =>
-      prev.map((worker) =>
-        worker.id === workerId ? { ...worker, isHeld: !worker.isHeld } : worker
-      )
+      prev.some((w) => w.id === workerId)
+        ? prev.map((w) => (w.id === workerId ? { ...w, isHeld: !w.isHeld } : w))
+        : prev
     );
   }, []);
 
@@ -182,17 +182,14 @@ function App() {
         isWorkingToday: true,
         isHeld: false, // New workers start unheld
       };
+
       setWorkers([...workers, newWorker]);
 
-      // Only clear shuffles if the new worker is working today and affects current results
-      if (newWorker.isWorkingToday) {
-        if (
-          (group === WORKER_TYPES.TECHNICAL && shuffledTechnical.length > 0) ||
-          (group === WORKER_TYPES.SERVICE && shuffledService.length > 0)
-        ) {
-          setShuffledTechnical([]);
-          setShuffledService([]);
-        }
+      // Add to shuffled arrays if they exist
+      if (group === WORKER_TYPES.TECHNICAL && shuffledTechnical.length > 0) {
+        setShuffledTechnical((prev) => [...prev, newWorker]);
+      } else if (group === WORKER_TYPES.SERVICE && shuffledService.length > 0) {
+        setShuffledService((prev) => [...prev, newWorker]);
       }
     },
     [workers, shuffledTechnical.length, shuffledService.length]
@@ -219,21 +216,43 @@ function App() {
 
   const toggleWorkerStatus = useCallback(
     (id) => {
+      const worker = workers.find((w) => w.id === id);
+      const isBecomingWorking = worker && !worker.isWorkingToday;
+
       setWorkers(
-        workers.map((worker) =>
-          worker.id === id
-            ? { ...worker, isWorkingToday: !worker.isWorkingToday }
-            : worker
+        workers.map((w) =>
+          w.id === id ? { ...w, isWorkingToday: !w.isWorkingToday } : w
         )
       );
 
-      // Only clear shuffles if this change affects current results
-      if (shouldClearShuffles(id)) {
-        setShuffledTechnical([]);
-        setShuffledService([]);
+      // If worker is becoming working and there are shuffled results, add them
+      if (isBecomingWorking && worker) {
+        if (
+          worker.group === WORKER_TYPES.TECHNICAL &&
+          shuffledTechnical.length > 0
+        ) {
+          setShuffledTechnical((prev) => [
+            ...prev,
+            { ...worker, isWorkingToday: true },
+          ]);
+        } else if (
+          worker.group === WORKER_TYPES.SERVICE &&
+          shuffledService.length > 0
+        ) {
+          setShuffledService((prev) => [
+            ...prev,
+            { ...worker, isWorkingToday: true },
+          ]);
+        }
+      }
+
+      // If worker is stopping work, remove them from shuffled arrays
+      if (!isBecomingWorking && worker) {
+        setShuffledTechnical((prev) => prev.filter((w) => w.id !== id));
+        setShuffledService((prev) => prev.filter((w) => w.id !== id));
       }
     },
-    [workers, shouldClearShuffles]
+    [workers, shuffledTechnical, shuffledService]
   );
 
   // Count held workers for display
@@ -356,7 +375,7 @@ function App() {
       {/* Version footer */}
       <div className="version-footer">
         <div className="version-info">
-          <span className="version-text">גרסה 1.6.1</span>
+          <span className="version-text">גרסה 1.7.0</span>
           <button className="changelog-btn" onClick={toggleChangelog}>
             {showChangelog ? "סגור ▲" : "מה חדש? ▼"}
           </button>
@@ -365,61 +384,25 @@ function App() {
         {showChangelog && (
           <div className="changelog-container">
             <div className="changelog-content">
-              <h4>🆕 מה חדש בגרסה 1.6.0:</h4>
+              <h4>🆕 מה חדש בגרסה 1.7.0:</h4>
 
               <div className="changelog-section">
-                <h5>🎨 עיצוב מחודש ומשופר:</h5>
+                <h5>🐛 תיקוני באגים קריטיים:</h5>
                 <ul>
-                  <li>רקע מדורג עם דוגמאות עדינות במקום רקע ריק</li>
-                  <li>כותרת ראשית משופרת עם אייקון 🎲 ואנימציה</li>
-                  <li>כרטיסיות מעוצבות עם צללים ופינות מעוגלות</li>
-                  <li>תת-כותרת חדשה: "ניהול וחלוקה חכמה של הפסקות עבודה"</li>
-                  <li>טקסט בגרדיאנט צבעוני למראה מקצועי יותר</li>
-                  <li>שיפור היררכיה חזותית ורווחים</li>
+                  <li>🔒 עובדים נעולים נשארים במקום גם בהגרלה הראשונה</li>
+                  <li>⚡ עובדים שנוספים למשמרת מופיעים מיד ללא רענון דף</li>
+                  <li>🔄 סנכרון משופר בין מצב עובדים ורשימות מעורבבות</li>
+                  <li>💾 תיקון דליפת זיכרון בזיהוי מכשירים ניידים</li>
                 </ul>
               </div>
 
               <div className="changelog-section">
-                <h5>🌅 ברכות זמן בעברית:</h5>
+                <h5>✨ גרסה 1.6.0 - עיצוב מחודש:</h5>
                 <ul>
-                  <li>
-                    ברכת זמן אוטומטית: בוקר טוב, צהריים טובים, ערב טוב, לילה טוב
-                  </li>
-                  <li>תצוגת תאריך מלא בעברית עם שם יום</li>
-                  <li>אמוג'י מותאם לזמן היום עם אנימציה עדינה</li>
-                  <li>עדכון אוטומטי כל שעה לפי שעון ישראל</li>
-                </ul>
-              </div>
-
-              <div className="changelog-section">
-                <h5>⚡ שיפורי ביצועים מרכזיים:</h5>
-                <ul>
-                  <li>הפחתה של 80% בכתיבות למטמון במהלך עריכה</li>
-                  <li>שמירה חכמה עם השהיה - רק לאחר סיום שינויים</li>
-                  <li>ביטול הגרלות רק כשנדרש באמת</li>
-                  <li>זיהוי מכשיר נייד משותף וממוטב</li>
-                  <li>מטמון חכם לחישובי איזור זמן (חיסכון 95%)</li>
-                  <li>הסרת ייבוא מיותר של shuffleArray</li>
-                </ul>
-              </div>
-
-              <div className="changelog-section">
-                <h5>🔧 אופטימיזציות טכניות:</h5>
-                <ul>
-                  <li>שימוש ב-useCallback למניעת עיבוד מיותר</li>
-                  <li>ניהול זיכרון משופר בטבלאות</li>
-                  <li>הפחתת חישובים מיותרים בשינוי גודל מסך</li>
-                  <li>הפחתת כפילות במצבי רכיב</li>
-                </ul>
-              </div>
-
-              <div className="changelog-section">
-                <h5>⏰ גרסה 1.3.0 - זיהוי זמן חכם:</h5>
-                <ul>
-                  <li>הוספת כותרות אוטומטיות לוואטסאפ לפי זמן</li>
-                  <li>בוקר (9:00-12:00): "הפסקות בוקר החל מ־10:00"</li>
-                  <li>צהריים (12:01-17:00): "הפסקות צהריים החל מ־13:00"</li>
-                  <li>זיהוי לפי שעון ישראל אוטומטית</li>
+                  <li>🎨 רקע מדורג עם דוגמאות עדינות</li>
+                  <li>🌅 ברכות זמן אוטומטיות בעברית</li>
+                  <li>⚡ שיפורי ביצועים - הפחתה של 80% בכתיבות למטמון</li>
+                  <li>🔧 אופטימיזציות טכניות עם useCallback</li>
                 </ul>
               </div>
 
@@ -434,16 +417,7 @@ function App() {
               </div>
 
               <div className="changelog-section">
-                <h5>✨ גרסה 1.1.2 - שיפורים:</h5>
-                <ul>
-                  <li>כפתור "עריכה ידנית" זמין תמיד</li>
-                  <li>ניתן לערוך סדר גם ללא הגרלה</li>
-                  <li>חוויית משתמש משופרת</li>
-                </ul>
-              </div>
-
-              <div className="changelog-section">
-                <h5>📋 גרסה 1.1.0 - תכונות עיקריות:</h5>
+                <h5>📋 גרסה 1.1.0 - עריכה ידנית:</h5>
                 <ul>
                   <li>עריכה ידנית של סדר ההפסקות</li>
                   <li>גרירה ושחרור במחשב</li>
