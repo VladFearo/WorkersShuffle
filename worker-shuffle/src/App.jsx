@@ -375,7 +375,7 @@ function App() {
       {/* Version footer */}
       <div className="version-footer">
         <div className="version-info">
-          <span className="version-text">גרסה 1.7.0</span>
+          <span className="version-text">גרסה 1.8.0</span>
           <button className="changelog-btn" onClick={toggleChangelog}>
             {showChangelog ? "סגור ▲" : "מה חדש? ▼"}
           </button>
@@ -384,10 +384,16 @@ function App() {
         {showChangelog && (
           <div className="changelog-container">
             <div className="changelog-content">
-              <h4>🆕 מה חדש בגרסה 1.7.0:</h4>
-
+              <h4>🆕 מה חדש בגרסה 1.8.0:</h4>
               <div className="changelog-section">
-                <h5>🐛 תיקוני באגים קריטיים:</h5>
+                <h5>⏰ שינויים בזמני ההפסקות:</h5>
+                <ul>
+                  <li>📞 הפסקות שירות נקבעו לשעות 09:30 ו־12:30</li>
+                  <li>🔧 הפסקות טכני נקבעו לשעות 10:00 ו־13:00</li>
+                </ul>
+              </div>
+              <div className="changelog-section">
+                <h5>🐛 גרסה 1.7.0 - תיקוני באגים קריטיים:</h5>
                 <ul>
                   <li>🔒 עובדים נעולים נשארים במקום גם בהגרלה הראשונה</li>
                   <li>⚡ עובדים שנוספים למשמרת מופיעים מיד ללא רענון דף</li>
